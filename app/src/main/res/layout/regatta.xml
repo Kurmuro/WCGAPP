@@ -7,26 +7,12 @@
     tools:context=".MainActivity">
 
     <Button
-        android:id="@+id/zurückbbregeln"
-        android:layout_width="72dp"
-        android:layout_height="36dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginBottom="8dp"
-        android:onClick="zurück"
-        android:text="Zurück"
-        android:textSize="10sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
         android:id="@+id/btnRegattaFertig"
         android:layout_width="72dp"
         android:layout_height="36dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginBottom="8dp"
-        android:onClick="regattaBeenden"
         android:text="Fertig"
         android:textSize="10sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -85,7 +71,7 @@
         app:layout_constraintTop_toBottomOf="@+id/EtTime" />
 
     <ListView
-        android:id="@+id/rangliste"
+        android:id="@+id/STARTSEITErangliste"
         android:layout_width="0dp"
         android:layout_height="494dp"
         android:layout_marginStart="8dp"

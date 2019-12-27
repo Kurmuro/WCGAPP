@@ -6,20 +6,22 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <ImageView
-        android:id="@+id/imageView3"
-        android:layout_width="413dp"
-        android:layout_height="88dp"
+    <include
+        android:id="@+id/include"
+        layout="@layout/appbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/header" />
+        app:layout_constraintTop_toTopOf="parent">
+
+    </include>
 
     <Button
-        android:id="@+id/btnAddUserdata"
+        android:id="@+id/VERWALTUNGhinzufügenBTN"
         android:layout_width="186dp"
         android:layout_height="62dp"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="100dp"
         android:background="#0131A2"
         android:text="Teilnehmer hinzufügen"
         android:textColor="#FFFFFF"
@@ -27,10 +29,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView3" />
+        app:layout_constraintTop_toBottomOf="@+id/include" />
 
     <Button
-        android:id="@+id/btnEditData"
+        android:id="@+id/VERWALTUNGändernBTN"
         android:layout_width="186dp"
         android:layout_height="62dp"
         android:layout_marginTop="16dp"
@@ -41,10 +43,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnAddUserdata" />
+        app:layout_constraintTop_toBottomOf="@+id/VERWALTUNGhinzufügenBTN" />
 
     <Button
-        android:id="@+id/btnDeleteData"
+        android:id="@+id/VERWALTUNGlöschenBTN"
         android:layout_width="186dp"
         android:layout_height="62dp"
         android:layout_marginTop="16dp"
@@ -55,10 +57,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnEditData" />
+        app:layout_constraintTop_toBottomOf="@+id/VERWALTUNGändernBTN" />
 
     <Button
-        android:id="@+id/saisonreset"
+        android:id="@+id/VERWALTUNGsaisonresetBTN"
         android:layout_width="186dp"
         android:layout_height="62dp"
         android:layout_marginTop="70dp"
@@ -69,19 +71,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnDeleteData" />
-
-    <Button
-        android:id="@+id/zurückbbregeln"
-        android:layout_width="72dp"
-        android:layout_height="36dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginBottom="8dp"
-        android:onClick="zurück"
-        android:text="Zurück"
-        android:textSize="10sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/VERWALTUNGlöschenBTN" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
