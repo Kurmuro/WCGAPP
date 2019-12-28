@@ -12,6 +12,15 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 
 public class TeilnehmerVerwaltung extends AppCompatActivity {
@@ -64,32 +73,8 @@ public class TeilnehmerVerwaltung extends AppCompatActivity {
         deleteBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*if(data.getCount() == 0){
-                    Toast.makeText(TeilnehmerVerwaltung.this, "Keine Teilnehmer Vorhanden", Toast.LENGTH_LONG).show();
-                    return;
-                }
+                getAllUsersFromFirebase();
 
-                List<String> users = new ArrayList<String>();
-                String[] userlist = new String[users.size()];
-
-                List<Integer> numbers = new ArrayList<Integer>();
-
-                while(data.moveToNext()){
-                    StringBuffer buffer = new StringBuffer();
-                    numbers.add(data.getInt(0));
-                    buffer.append("Vorname: " + data.getString(1) + "\n");
-                    buffer.append("Nachname: " + data.getString(2) + "\n");
-                    buffer.append("Boottyp: " + data.getString(3) + "\n");
-                    buffer.append("Yardstick: " + data.getInt(4) + "\n");
-
-                    users.add( buffer.toString());
-
-                }
-
-                userlist = users.toArray(userlist);
-                displayDeleteView("Teilnehmer auswählen:", userlist);
-
-                 */
             }
         });
         resetBTN.setOnClickListener(new View.OnClickListener() {
@@ -107,19 +92,52 @@ public class TeilnehmerVerwaltung extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void displayDeleteView(String title, String[] userlist){
+
+
+
+    public void getAllUsersFromFirebase() {
+        DatabaseReference UserRef = FirebaseDatabase.getInstance().getReference().child("users");
+        UserRef.keepSynced(true);
+        final List<String> users = new ArrayList<>();
+        final List<String> usersUid = new ArrayList<>();
+
+        UserRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Iterator<DataSnapshot> dataSnapshots = dataSnapshot.getChildren().iterator();
+                while (dataSnapshots.hasNext()) {
+                    DataSnapshot dataSnapshotChild = dataSnapshots.next();
+                    StringBuffer buffer = new StringBuffer();
+
+                    buffer.append("Name: "+dataSnapshotChild.child("Vorname").getValue().toString() +" "+ dataSnapshotChild.child("Nachname").getValue().toString() + "\n");
+                    buffer.append("Bootstyp: "+dataSnapshotChild.child("Bootstyp").getValue() + "\n");
+
+                    users.add( buffer.toString());
+                    usersUid.add(dataSnapshotChild.getValue().toString());
+
+
+                }
+                String[] userlist = new String[users.size()];
+                userlist = users.toArray(userlist);
+                displayDeleteView("Teilnehmer auswählen:", userlist, usersUid);
+            }
+
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // for handling database error
+                Toast.makeText(TeilnehmerVerwaltung.this, "Eventuel keine Teilnehmer vorhanden", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    public void displayDeleteView(String title, String[] userlist, final List<String> numbers){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setCancelable(true);
         builder.setTitle(title);
         builder.setItems(userlist, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                int deleteRow = 1;
-                if(deleteRow > 0){
-                    Toast.makeText(TeilnehmerVerwaltung.this, "Erfolgreich gelöscht", Toast.LENGTH_LONG).show();
-                }else{
-                    Toast.makeText(TeilnehmerVerwaltung.this, "Irgendwas ist schief gegangen", Toast.LENGTH_LONG).show();
-                }
             }
         });
         AlertDialog dialog = builder.create();

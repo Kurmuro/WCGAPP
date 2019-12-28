@@ -91,11 +91,11 @@ public class TeilnehmerErstellTabelle extends AppCompatActivity {
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
                                         FirebaseUser user = task.getResult().getUser();
-                                        mDatabase.child(user.getUid()).child("Email").setValue(email);
-                                        mDatabase.child(user.getUid()).child("Vorname").setValue(vorname);
-                                        mDatabase.child(user.getUid()).child("Nachname").setValue(nachname);
-                                        mDatabase.child(user.getUid()).child("Bootstyp").setValue(bootstyp);
-                                        mDatabase.child(user.getUid()).child("Yardstick").setValue(Integer.parseInt(yardstickView.getText().toString()));
+                                        mDatabase.child("users").child(user.getUid()).child("Email").setValue(email);
+                                        mDatabase.child("users").child(user.getUid()).child("Vorname").setValue(vorname);
+                                        mDatabase.child("users").child(user.getUid()).child("Nachname").setValue(nachname);
+                                        mDatabase.child("users").child(user.getUid()).child("Bootstyp").setValue(bootstyp);
+                                        mDatabase.child("users").child(user.getUid()).child("Yardstick").setValue(Integer.parseInt(yardstickView.getText().toString()));
                                         Toast.makeText(TeilnehmerErstellTabelle.this, "Benutzer hinzugefügt", Toast.LENGTH_SHORT).show();
                                         loginRefresh();
                                     } else {
