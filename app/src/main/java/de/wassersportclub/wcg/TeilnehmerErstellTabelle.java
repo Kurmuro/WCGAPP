@@ -1,6 +1,7 @@
 package de.wassersportclub.wcg;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -24,15 +25,23 @@ public class TeilnehmerErstellTabelle extends AppCompatActivity {
     TextView willkommenstextTV, emailView, vornameView, nachnameView, bootstypView, yardstickView;
     Button logoutBTN, finishBTN;
 
-    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    FirebaseAuth mAuth;
 
+    SharedPreferences sharedPreferences;
+
+    String orginemail;
+
+    Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.teilnehmer_erstell_tabelle);
+        mAuth = FirebaseAuth.getInstance();
         willkommenstextTV = findViewById(R.id.HEADERwillkommenstextTV);
         willkommenstextTV.setText("Willkommen " + mAuth.getCurrentUser().getEmail());
+        orginemail = mAuth.getCurrentUser().getEmail();
+        intent = getIntent();
 
         logoutBTN = findViewById(R.id.HEADERlogoutBTN);
         finishBTN = findViewById(R.id.TABLEhinzufügenBTN);
@@ -41,6 +50,8 @@ public class TeilnehmerErstellTabelle extends AppCompatActivity {
         nachnameView = findViewById(R.id.TABLEnachname);
         bootstypView = findViewById(R.id.TABLEbootstyp);
         yardstickView = findViewById(R.id.TABLEyardstick);
+
+        sharedPreferences = this.getSharedPreferences("de.wassersportclub.wcg", MODE_PRIVATE);
 
         //Startet den Listener für alle buttons
         doListen();
@@ -85,11 +96,8 @@ public class TeilnehmerErstellTabelle extends AppCompatActivity {
                                         mDatabase.child(user.getUid()).child("Nachname").setValue(nachname);
                                         mDatabase.child(user.getUid()).child("Bootstyp").setValue(bootstyp);
                                         mDatabase.child(user.getUid()).child("Yardstick").setValue(Integer.parseInt(yardstickView.getText().toString()));
-                                        Intent intent = getIntent();
-                                        finish();
-                                        startActivity(intent);
                                         Toast.makeText(TeilnehmerErstellTabelle.this, "Benutzer hinzugefügt", Toast.LENGTH_SHORT).show();
-
+                                        loginRefresh();
                                     } else {
                                         // Registrieren schief gegangen
                                         Log.w("test", "createUserWithEmail:failure", task.getException());
@@ -97,11 +105,31 @@ public class TeilnehmerErstellTabelle extends AppCompatActivity {
                                     }
                                 }
                             });
+
+
+
                 }else{
                     Toast.makeText(TeilnehmerErstellTabelle.this, "Fehler: Alles richtig eingegeben?", Toast.LENGTH_LONG).show();
                 }
             }
         });
+    }
+
+    public void loginRefresh(){
+        String pw = sharedPreferences.getString("passwort", "keinpasswortvorhanden");
+        mAuth.signInWithEmailAndPassword(orginemail, pw)
+                .addOnCompleteListener(TeilnehmerErstellTabelle.this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            finish();
+                            startActivity(intent);
+                        } else {
+                            // Registrieren schief gegangen
+
+                        }
+                    }
+                });
     }
 
     //Loggt den benutzer aus
