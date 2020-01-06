@@ -95,6 +95,7 @@ public class TeilnehmerErstellTabelle extends AppCompatActivity {
                                         mDatabase.child("users").child(user.getUid()).child("Vorname").setValue(vorname);
                                         mDatabase.child("users").child(user.getUid()).child("Nachname").setValue(nachname);
                                         mDatabase.child("users").child(user.getUid()).child("Bootstyp").setValue(bootstyp);
+                                        mDatabase.child("users").child(user.getUid()).child("Passwort").setValue("123456");
                                         mDatabase.child("users").child(user.getUid()).child("Yardstick").setValue(Integer.parseInt(yardstickView.getText().toString()));
                                         Toast.makeText(TeilnehmerErstellTabelle.this, "Benutzer hinzugefügt", Toast.LENGTH_SHORT).show();
                                         loginRefresh();
