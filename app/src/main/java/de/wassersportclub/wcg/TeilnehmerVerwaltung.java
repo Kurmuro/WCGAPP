@@ -190,6 +190,7 @@ public class TeilnehmerVerwaltung extends AppCompatActivity {
                             FirebaseDatabase.getInstance().getReference().child("users").child(useruid.get(which)).removeValue();
                             mAuth.getCurrentUser().delete();
                             mAuth.signInWithEmailAndPassword(orginemail, sharedPreferences.getString("passwort", "keinpasswortvorhanden"));
+                            Toast.makeText(TeilnehmerVerwaltung.this, "Benutzer gelöscht", Toast.LENGTH_SHORT).show();
                         } else {
                             // Einloggen schief gegangen
                         }
