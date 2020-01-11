@@ -1,10 +1,17 @@
 package de.wassersportclub.wcg;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
+import android.content.DialogInterface;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,7 +32,7 @@ public class Regatta extends AppCompatActivity {
     Button btnStartTime, btnTeilnehmerAuswählen;
     Timer stoppuhr;
     TextView timeview;
-//  boolean[] checked;
+    //  boolean[] checked;
     static long start;
     static boolean timerisrunning;
 
@@ -34,10 +41,10 @@ public class Regatta extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.regatta);
 
-          timeview = findViewById(R.id.EtTime);
-          btnStartTime = findViewById(R.id.btnStartTime);
-          stoppuhr =  new Timer();
-          btnTeilnehmerAuswählen = findViewById(R.id.btnTeilnehmerAuswählen);
+        timeview = findViewById(R.id.EtTime);
+        btnStartTime = findViewById(R.id.btnStartTime);
+        stoppuhr = new Timer();
+        btnTeilnehmerAuswählen = findViewById(R.id.btnTeilnehmerAuswählen);
 
         doListen();
 
@@ -62,63 +69,57 @@ public class Regatta extends AppCompatActivity {
     }
 
     //timer
-    public void startStoppuhr(){
-
+    public void startStoppuhr() {
 
 
         final String[] secondString = new String[3];
 
-                if(!timerisrunning) {
-                   // if(checked != null) {
-                        start = System.currentTimeMillis();
-                        btnStartTime.setText("Abbrechen");
-                        timerisrunning = true;
-                        stoppuhr.schedule(new TimerTask() {
-                            @Override
-                            public void run() {
+        if (!timerisrunning) {
+            // if(checked != null) {
+            start = System.currentTimeMillis();
+            btnStartTime.setText("Abbrechen");
+            timerisrunning = true;
+            stoppuhr.schedule(new TimerTask() {
+                @Override
+                public void run() {
 
-                                final long longseconds = (System.currentTimeMillis() - start) / 1000;
-                                final int a = (int) longseconds;
-                                final int stunden = a / 3600;
-                                final int minuten = (a % 3600) / 60;
-                                final Integer sekunden = (a % 3600) % 60;
+                    final long longseconds = (System.currentTimeMillis() - start) / 1000;
+                    final int a = (int) longseconds;
+                    final int stunden = a / 3600;
+                    final int minuten = (a % 3600) / 60;
+                    final Integer sekunden = (a % 3600) % 60;
 
 
-                                secondString[0] = Integer.toString(sekunden);
-                                if (sekunden <= 9) {
-                                    secondString[0] = "0" + sekunden;
+                    secondString[0] = Integer.toString(sekunden);
+                    if (sekunden <= 9) {
+                        secondString[0] = "0" + sekunden;
 
-                                }
-                                secondString[1] = Integer.toString(minuten);
-                                if (minuten <= 9) {
-                                    secondString[1] = "0" + minuten;
+                    }
+                    secondString[1] = Integer.toString(minuten);
+                    if (minuten <= 9) {
+                        secondString[1] = "0" + minuten;
 
-                                }
-                                secondString[2] = Integer.toString(stunden);
-                                if (stunden <= 9) {
-                                    secondString[2] = "0" + stunden;
+                    }
+                    secondString[2] = Integer.toString(stunden);
+                    if (stunden <= 9) {
+                        secondString[2] = "0" + stunden;
 
-                                }
+                    }
 
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        timeview.setText(secondString[2] + ":" + secondString[1] + ":" + secondString[0]);
-                                    }
-                                });
-                            }
-                        }, 0, 1000);
-                  //  }
-                }else{
-                    stoppuhr.cancel();
-                   // checked = null;
-                    timerisrunning = false;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            timeview.setText(secondString[2] + ":" + secondString[1] + ":" + secondString[0]);
+                        }
+                    });
                 }
-            }
-
-    //Regattateilnehmer Liste
-    public void regattaUsers (){
-
+            }, 0, 1000);
+            //  }
+        } else {
+            stoppuhr.cancel();
+            // checked = null;
+            timerisrunning = false;
+        }
     }
 
     public void getAllUsersFromFirebase() {
@@ -149,6 +150,7 @@ public class Regatta extends AppCompatActivity {
                 String[] userlist = new String[users.size()];
                 userlist = users.toArray(userlist);
             }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 // for handling database error
@@ -157,6 +159,51 @@ public class Regatta extends AppCompatActivity {
         });
     }
 
+    //Regattateilnehmer Liste
 
+    public void regattaTeilnehmer(final String title, final String[] userlist, final boolean[] checked, final List<Integer> numbers) {
+
+        final List<Integer> usersid = new ArrayList<>();
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(true);
+        builder.setTitle(title);
+        builder.setMultiChoiceItems(userlist, checked, new DialogInterface.OnMultiChoiceClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+            }
+        });
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                for (int i = 0; i < checked.length; i++) {
+                    if (checked[i]) {
+                        usersid.add(numbers.get(i));
+                    }
+                }
+                //addUserstoList(usersid);
+            }
+        });
+        builder.setNegativeButton("Abbrechen", null);
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    class MyListAdapter extends ArrayAdapter<String> {
+
+        int layout;
+        List<String> object;
+        List<Integer> useduserid;
+
+        public MyListAdapter(@NonNull Context context, int resource, @NonNull List<String> objects, List<Integer> usedusersid) {
+            super(context, resource, objects);
+            layout = resource;
+            object = objects;
+            useduserid = usedusersid;
+        }
+
+    }
 }
 

@@ -108,7 +108,7 @@
     </include>
 
     <ListView
-        android:id="@+id/STARTSEITErangliste"
+        android:id="@+id/rangliste"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
