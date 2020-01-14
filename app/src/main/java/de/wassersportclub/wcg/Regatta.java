@@ -213,30 +213,49 @@ public class Regatta extends AppCompatActivity {
     }
 
     //Ausgewählte Benutzer in Liste einfügen
-    public void addUserstoList(final List<String> usersid){
+    public void addUserstoList(final List<String> usersid) {
 
         //Datenbank Reference herstellen
         DatabaseReference UserRef = FirebaseDatabase.getInstance().getReference();
         UserRef.keepSynced(true);
 
+        Object lock = new Object();
+
         //Teilnehmerliste erstellen <vorname+nachname>
         final List<String> users = new ArrayList<>();
+            //Für jeden ausgewählten Benutzer Vor und Nachname in users abspeichern
+            for (String i : usersid) {
+                UserRef.child("users").child(i).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        //Wenn auf Datenbank zugegriffen werden kann:
 
-        //Für jeden ausgewählten Benutzer Vor und Nachname in users abspeichern
-        for(String i:usersid){
-        UserRef.child("users").child(i).addListenerForSingleValueEvent(new ValueEventListener() {
+                        StringBuffer buffer = new StringBuffer();
+
+                        buffer.append(dataSnapshot.child("Vorname").getValue().toString() + " ");
+                        buffer.append(dataSnapshot.child("Nachname").getValue().toString());
+
+                        users.add(buffer.toString());
+
+                        System.out.println("test1" + " " + users);
+                    }
+
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        //Wenn ein Fehler auftritt:
+                    }
+                });
+            }
+
+        //User Liste eintragen
+        UserRef.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 //Wenn auf Datenbank zugegriffen werden kann:
 
-                StringBuffer buffer = new StringBuffer();
-
-                buffer.append(dataSnapshot.child("Vorname").getValue().toString()+ " ");
-                buffer.append(dataSnapshot.child("Nachname").getValue().toString());
-
-                users.add(buffer.toString());
-
-                System.out.println("test1"+" "+ users);
+                ListView list = findViewById(R.id.rangliste);
+                list.setAdapter(new MyListAdapter(Regatta.this, R.layout.regatta_items, users, usersid));
             }
 
 
@@ -245,12 +264,6 @@ public class Regatta extends AppCompatActivity {
                 //Wenn ein Fehler auftritt:
             }
         });
-    }
-        System.out.println("test2"+" "+ users);
-
-        //User Liste eintragen
-        ListView list  = findViewById(R.id.rangliste);
-        list.setAdapter(new MyListAdapter(this, R.layout.regatta_items, users, usersid));
     }
 
 
