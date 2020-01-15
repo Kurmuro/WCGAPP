@@ -219,8 +219,6 @@ public class Regatta extends AppCompatActivity {
         DatabaseReference UserRef = FirebaseDatabase.getInstance().getReference();
         UserRef.keepSynced(true);
 
-        Object lock = new Object();
-
         //Teilnehmerliste erstellen <vorname+nachname>
         final List<String> users = new ArrayList<>();
             //Für jeden ausgewählten Benutzer Vor und Nachname in users abspeichern

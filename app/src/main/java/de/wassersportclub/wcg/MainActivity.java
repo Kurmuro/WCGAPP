@@ -15,6 +15,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,6 +33,9 @@ public class MainActivity extends AppCompatActivity {
         passwortET = findViewById(R.id.LOGINpasswortET);
 
         sharedPreferences = this.getSharedPreferences("de.wassersportclub.wcg", MODE_PRIVATE);
+
+        DatabaseReference UserRef = FirebaseDatabase.getInstance().getReference();
+        UserRef.keepSynced(true);
 
         //abfrage ob der benutzer schon eingelogt ist/war
         if(mAuth.getCurrentUser() != null){
