@@ -78,52 +78,53 @@ public class Regatta extends AppCompatActivity {
         final String[] secondString = new String[3];
 
         if (!timerisrunning) {
-            // if(checked != null) {
-            start = System.currentTimeMillis();
-            btnStartTime.setText("Abbrechen");
-            timerisrunning = true;
-            stoppuhr.schedule(new TimerTask() {
-                @Override
-                public void run() {
+            if (checked != null) {
+                start = System.currentTimeMillis();
+                btnStartTime.setText("Abbrechen");
+                timerisrunning = true;
+                stoppuhr.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
 
-                    final long longseconds = (System.currentTimeMillis() - start) / 1000;
-                    final int a = (int) longseconds;
-                    final int stunden = a / 3600;
-                    final int minuten = (a % 3600) / 60;
-                    final Integer sekunden = (a % 3600) % 60;
+                        final long longseconds = (System.currentTimeMillis() - start) / 1000;
+                        final int a = (int) longseconds;
+                        final int stunden = a / 3600;
+                        final int minuten = (a % 3600) / 60;
+                        final Integer sekunden = (a % 3600) % 60;
 
 
-                    secondString[0] = Integer.toString(sekunden);
-                    if (sekunden <= 9) {
-                        secondString[0] = "0" + sekunden;
+                        secondString[0] = Integer.toString(sekunden);
+                        if (sekunden <= 9) {
+                            secondString[0] = "0" + sekunden;
 
-                    }
-                    secondString[1] = Integer.toString(minuten);
-                    if (minuten <= 9) {
-                        secondString[1] = "0" + minuten;
-
-                    }
-                    secondString[2] = Integer.toString(stunden);
-                    if (stunden <= 9) {
-                        secondString[2] = "0" + stunden;
-
-                    }
-
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            timeview.setText(secondString[2] + ":" + secondString[1] + ":" + secondString[0]);
                         }
-                    });
-                }
-            }, 0, 1000);
-            //  }
-        } else {
-            stoppuhr.cancel();
-            // checked = null;
-            timerisrunning = false;
+                        secondString[1] = Integer.toString(minuten);
+                        if (minuten <= 9) {
+                            secondString[1] = "0" + minuten;
+
+                        }
+                        secondString[2] = Integer.toString(stunden);
+                        if (stunden <= 9) {
+                            secondString[2] = "0" + stunden;
+
+                        }
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                timeview.setText(secondString[2] + ":" + secondString[1] + ":" + secondString[0]);
+                            }
+                        });
+                    }
+                }, 0, 1000);
+                 }
+            } else {
+                stoppuhr.cancel();
+                checked = null;
+                timerisrunning = false;
+                finish();
+            }
         }
-    }
 
 
 
