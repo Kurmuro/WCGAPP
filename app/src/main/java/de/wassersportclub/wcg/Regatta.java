@@ -27,17 +27,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class Regatta extends AppCompatActivity {
 
-    Button btnStartTime, btnTeilnehmerAuswählen;
+    Button btnStartTime, btnTeilnehmerAuswählen, btnRegattaFertig;
     Timer stoppuhr;
     TextView timeview;
     boolean[] checked;
     static long start;
     static boolean timerisrunning;
+
+    static HashMap<String, String> zeitTabelle = new HashMap<>();
+    static HashMap<String, Boolean> userclickable = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +52,7 @@ public class Regatta extends AppCompatActivity {
         btnStartTime = findViewById(R.id.btnStartTime);
         stoppuhr = new Timer();
         btnTeilnehmerAuswählen = findViewById(R.id.btnTeilnehmerAuswählen);
+        btnRegattaFertig = findViewById(R.id.btnRegattaFertig);
 
         doListen();
 
@@ -67,8 +72,23 @@ public class Regatta extends AppCompatActivity {
                 SelectUserData();
             }
         });
+        btnRegattaFertig.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                zeitBerechnung();
+            }
+        });
 
+    }
 
+    private void zeitBerechnung() {
+        if(!zeitTabelle.isEmpty()){
+            for(Map.Entry e : zeitTabelle.entrySet()){
+                if(e.getValue().toString() != "00:00:00") {
+                    System.out.println("test " + e.getKey() + " = " + e.getValue());
+                }
+            }
+        }
     }
 
     //timer
@@ -133,7 +153,7 @@ public class Regatta extends AppCompatActivity {
 
 
 
-    static HashMap<String, String> zeitTabelle = new HashMap<>();
+
     //Liste erstellen mit allen Auswählbaren Benutzern
     public void SelectUserData() {
         DatabaseReference UserRef = FirebaseDatabase.getInstance().getReference();
@@ -271,7 +291,7 @@ public class Regatta extends AppCompatActivity {
 
     }
 
-    static HashMap<String, Boolean> userclickable = new HashMap<>();
+
 
 }
 class MyListAdapter extends ArrayAdapter<String> {
@@ -355,7 +375,7 @@ class MyListAdapter extends ArrayAdapter<String> {
                 @Override
                 public void onClick(View v) {
                     viewHolder.time.setText("00:00:00");
-                    Regatta.zeitTabelle.put(viewHolder.id,null);
+                    Regatta.zeitTabelle.put(viewHolder.id,"00:00:00");
                     viewHolder.editable = true;
                     Regatta.userclickable.put(viewHolder.id,null);
                 }

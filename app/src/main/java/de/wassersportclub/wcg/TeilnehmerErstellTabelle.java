@@ -90,6 +90,8 @@ public class TeilnehmerErstellTabelle extends AppCompatActivity {
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
+
+
                                         FirebaseUser user = task.getResult().getUser();
                                         mDatabase.child("users").child(user.getUid()).child("Email").setValue(email);
                                         mDatabase.child("users").child(user.getUid()).child("Vorname").setValue(vorname);
