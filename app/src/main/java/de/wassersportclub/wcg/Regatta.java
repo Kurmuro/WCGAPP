@@ -144,6 +144,7 @@ public class Regatta extends AppCompatActivity {
                 timerisrunning = false;
                 zeitTabelle.clear();
                 finish();
+                System.exit(0);
             }
         }
 
@@ -285,13 +286,6 @@ public class Regatta extends AppCompatActivity {
             }
         });
     }
-
-
-    //regatta beenden
-    public void regattaBeenden(View view){
-    }
-
-
 
 }
 class MyListAdapter extends ArrayAdapter<String> {
