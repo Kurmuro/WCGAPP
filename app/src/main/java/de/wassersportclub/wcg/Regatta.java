@@ -58,6 +58,22 @@ public class Regatta extends AppCompatActivity {
 
     }
 
+    public void regattaAbbrechen() {
+        stoppuhr.cancel();
+        checked = null;
+        timerisrunning = false;
+        zeitTabelle.clear();
+        finish();
+        System.exit(0);
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        regattaAbbrechen();
+    }
+
     //Listener
     private void doListen() {
         btnStartTime.setOnClickListener(new View.OnClickListener() {
@@ -139,12 +155,7 @@ public class Regatta extends AppCompatActivity {
                 }, 0, 1000);
                  }
             } else {
-                stoppuhr.cancel();
-                checked = null;
-                timerisrunning = false;
-                zeitTabelle.clear();
-                finish();
-                System.exit(0);
+                regattaAbbrechen();
             }
         }
 
