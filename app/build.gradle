@@ -4,6 +4,9 @@ apply plugin: 'com.google.gms.google-services'
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
+    lintOptions{
+        disable 'MissingTranslation'
+    }
     defaultConfig {
         applicationId "de.wassersportclub.wcg"
         minSdkVersion 16

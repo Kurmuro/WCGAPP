@@ -33,7 +33,7 @@ import java.util.TimerTask;
 
 public class Regatta extends AppCompatActivity {
 
-    Button btnStartTime, btnTeilnehmerAuswählen, btnRegattaFertig;
+    Button btnStartTime, btnTeilnehmerAuswaehlen, btnRegattaFertig;
     Timer stoppuhr;
     TextView timeview;
     boolean[] checked;
@@ -51,7 +51,7 @@ public class Regatta extends AppCompatActivity {
         timeview = findViewById(R.id.EtTime);
         btnStartTime = findViewById(R.id.btnStartTime);
         stoppuhr = new Timer();
-        btnTeilnehmerAuswählen = findViewById(R.id.btnTeilnehmerAuswählen);
+        btnTeilnehmerAuswaehlen = findViewById(R.id.btnTeilnehmerAuswählen);
         btnRegattaFertig = findViewById(R.id.btnRegattaFertig);
 
         doListen();
@@ -66,7 +66,7 @@ public class Regatta extends AppCompatActivity {
                 startStoppuhr();
             }
         });
-        btnTeilnehmerAuswählen.setOnClickListener(new View.OnClickListener() {
+        btnTeilnehmerAuswaehlen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 SelectUserData();
@@ -84,7 +84,7 @@ public class Regatta extends AppCompatActivity {
     private void zeitBerechnung() {
         if(!zeitTabelle.isEmpty()){
             for(Map.Entry e : zeitTabelle.entrySet()){
-                if(e.getValue().toString() != "00:00:00") {
+                if(e.getValue().toString().equals("00:00:00")) {
                     System.out.println("test " + e.getKey() + " = " + e.getValue());
                 }
             }
@@ -110,7 +110,7 @@ public class Regatta extends AppCompatActivity {
                         final int a = (int) longseconds;
                         final int stunden = a / 3600;
                         final int minuten = (a % 3600) / 60;
-                        final Integer sekunden = (a % 3600) % 60;
+                        final int sekunden = (a % 3600) % 60;
 
 
                         secondString[0] = Integer.toString(sekunden);
@@ -142,6 +142,7 @@ public class Regatta extends AppCompatActivity {
                 stoppuhr.cancel();
                 checked = null;
                 timerisrunning = false;
+                zeitTabelle.clear();
                 finish();
             }
         }
@@ -159,7 +160,7 @@ public class Regatta extends AppCompatActivity {
         DatabaseReference UserRef = FirebaseDatabase.getInstance().getReference();
         UserRef.keepSynced(true);
 
-        final List<String> users = new ArrayList<String>();
+        final List<String> users = new ArrayList<>();
         final List<String> numbers = new ArrayList<>();
 
 
@@ -288,7 +289,6 @@ public class Regatta extends AppCompatActivity {
 
     //regatta beenden
     public void regattaBeenden(View view){
-
     }
 
 
@@ -310,17 +310,17 @@ class MyListAdapter extends ArrayAdapter<String> {
     @NonNull
     @Override
     public View getView(final int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        ViewHolder mainViewHolder = null;
+        ViewHolder mainViewHolder;
         if(convertView == null){
             LayoutInflater inflater = LayoutInflater.from(getContext());
             convertView = inflater.inflate(layout, parent, false);
             final ViewHolder viewHolder = new ViewHolder();
-            viewHolder.name = (TextView) convertView.findViewById(R.id.regatta_name);
+            viewHolder.name = convertView.findViewById(R.id.regatta_name);
             viewHolder.name.setText(object.get(position));
-            viewHolder.time = (TextView) convertView.findViewById(R.id.regatta_timer);
+            viewHolder.time = convertView.findViewById(R.id.regatta_timer);
 
-            viewHolder.btnClear =(Button) convertView.findViewById(R.id.regatta_btn_clear);
-            viewHolder.btnStop = (Button) convertView.findViewById(R.id.regatta_btn_stop);
+            viewHolder.btnClear = convertView.findViewById(R.id.regatta_btn_clear);
+            viewHolder.btnStop = convertView.findViewById(R.id.regatta_btn_stop);
             viewHolder.id = useduserid.get(position);
             if(!Regatta.zeitTabelle.get(viewHolder.id).contains("00:00:00")){
                 viewHolder.time.setText(Regatta.zeitTabelle.get(viewHolder.id));
@@ -389,6 +389,7 @@ class MyListAdapter extends ArrayAdapter<String> {
 
         return convertView;
     }
+
 }
 class ViewHolder{
     Boolean editable = true;
