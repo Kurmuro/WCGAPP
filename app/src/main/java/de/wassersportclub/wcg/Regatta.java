@@ -268,8 +268,6 @@ public class Regatta extends AppCompatActivity {
                         buffer.append(dataSnapshot.child("Nachname").getValue().toString());
 
                         users.add(buffer.toString());
-
-                        System.out.println("test1" + " " + users);
                     }
 
 
@@ -286,7 +284,7 @@ public class Regatta extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 //Wenn auf Datenbank zugegriffen werden kann:
 
-                ListView list = findViewById(R.id.rangliste);
+                ListView list = findViewById(R.id.auswahlliste);
                 list.setAdapter(new MyListAdapter(Regatta.this, R.layout.regatta_items, users, usersid));
             }
 

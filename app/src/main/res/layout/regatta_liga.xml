@@ -4,7 +4,7 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/rang"
+        android:id="@+id/rangliste"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginLeft="0dp"
@@ -19,8 +19,8 @@
         android:layout_height="40dp"
         android:layout_marginStart="0dp"
         android:layout_marginLeft="0dp"
-        android:layout_toEndOf="@+id/rang"
-        android:layout_toRightOf="@+id/rang"
+        android:layout_toEndOf="@+id/rangliste"
+        android:layout_toRightOf="@+id/rangliste"
         android:gravity="center|left"
         android:text=" TextView"
         android:textSize="24sp" />
