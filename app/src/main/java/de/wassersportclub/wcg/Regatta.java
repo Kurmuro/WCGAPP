@@ -100,8 +100,15 @@ public class Regatta extends AppCompatActivity {
     private void zeitBerechnung() {
         if(!zeitTabelle.isEmpty()){
             for(Map.Entry e : zeitTabelle.entrySet()){
-                if(e.getValue().toString().equals("00:00:00")) {
-                    System.out.println("test " + e.getKey() + " = " + e.getValue());
+                if(!e.getValue().toString().equals("00:00:00")) {
+                    int zeitInSekunden;
+                    String numbers = e.getValue().toString();
+                    String[] split = numbers.split(":");
+                    zeitInSekunden = Integer.getInteger(split[2]);
+                    zeitInSekunden = zeitInSekunden + Integer.getInteger(split[1])*60;
+                    zeitInSekunden = zeitInSekunden + Integer.getInteger(split[0])*60*60;
+                    System.out.println("test" + zeitInSekunden);
+
                 }
             }
         }
