@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicIntegerArray;
 
 public class Regatta extends AppCompatActivity {
 
@@ -102,12 +103,16 @@ public class Regatta extends AppCompatActivity {
             for(Map.Entry e : zeitTabelle.entrySet()){
                 if(!e.getValue().toString().equals("00:00:00")) {
                     int zeitInSekunden;
+                    int berechneteYardstickzeit;
                     String numbers = e.getValue().toString();
                     String[] split = numbers.split(":");
-                    zeitInSekunden = Integer.getInteger(split[2]);
-                    zeitInSekunden = zeitInSekunden + Integer.getInteger(split[1])*60;
-                    zeitInSekunden = zeitInSekunden + Integer.getInteger(split[0])*60*60;
-                    System.out.println("test" + zeitInSekunden);
+                    zeitInSekunden = Integer.parseInt(split[2]);
+                    zeitInSekunden += Integer.parseInt(split[1])*60;
+                    zeitInSekunden += Integer.parseInt(split[0])*60*60;
+
+                    berechneteYardstickzeit = (zeitInSekunden*100)/115;//Yardstickzahl aus Datenbank
+
+                    System.out.println("test" + berechneteYardstickzeit);
 
                 }
             }
