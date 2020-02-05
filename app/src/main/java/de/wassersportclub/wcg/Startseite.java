@@ -141,7 +141,8 @@ public class Startseite extends AppCompatActivity {
                 Iterator<DataSnapshot> dataSnapshots = dataSnapshot.getChildren().iterator();
                 while (dataSnapshots.hasNext()) {
                     DataSnapshot dataSnapshotChild = dataSnapshots.next();
-                    regatten++;
+                    regatten++
+                    ;
                 }
                 if(regatten != 0){
                     ranglisteErstellen(1);

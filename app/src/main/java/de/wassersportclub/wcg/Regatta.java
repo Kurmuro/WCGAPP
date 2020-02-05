@@ -24,13 +24,16 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.atomic.AtomicIntegerArray;
 
 public class Regatta extends AppCompatActivity {
 
@@ -40,6 +43,8 @@ public class Regatta extends AppCompatActivity {
     boolean[] checked;
     static long start;
     static boolean timerisrunning;
+    int berechnungsZähler;
+    DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
     static HashMap<String, String> zeitTabelle = new HashMap<>();
     static HashMap<String, Boolean> userclickable = new HashMap<>();
@@ -54,6 +59,7 @@ public class Regatta extends AppCompatActivity {
         stoppuhr = new Timer();
         btnTeilnehmerAuswaehlen = findViewById(R.id.btnTeilnehmerAuswählen);
         btnRegattaFertig = findViewById(R.id.btnRegattaFertig);
+        berechnungsZähler = 0;
 
         doListen();
 
@@ -100,24 +106,99 @@ public class Regatta extends AppCompatActivity {
 
     private void zeitBerechnung() {
         if(!zeitTabelle.isEmpty()){
-            for(Map.Entry e : zeitTabelle.entrySet()){
+
+            final Map<String, Integer> unsortMap = new HashMap<>();
+
+
+            for(final Map.Entry e : zeitTabelle.entrySet()){
                 if(!e.getValue().toString().equals("00:00:00")) {
-                    int zeitInSekunden;
-                    int berechneteYardstickzeit;
-                    String numbers = e.getValue().toString();
-                    String[] split = numbers.split(":");
-                    zeitInSekunden = Integer.parseInt(split[2]);
-                    zeitInSekunden += Integer.parseInt(split[1])*60;
-                    zeitInSekunden += Integer.parseInt(split[0])*60*60;
 
-                    berechneteYardstickzeit = (zeitInSekunden*100)/115;//Yardstickzahl aus Datenbank
+                    mDatabase.child("users").child(e.getKey().toString()).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            int yardstickDb = Integer.parseInt(dataSnapshot.child("Yardstick").getValue().toString());
 
-                    System.out.println("test" + berechneteYardstickzeit);
+                            int zeitInSekunden;
+                            int berechneteYardstickzeit;
 
+                            String numbers = e.getValue().toString();
+                            String[] split = numbers.split(":");
+                            zeitInSekunden = Integer.parseInt(split[2]);
+                            zeitInSekunden += Integer.parseInt(split[1])*60;
+                            zeitInSekunden += Integer.parseInt(split[0])*60*60;
+                            berechneteYardstickzeit = (zeitInSekunden*100)/yardstickDb;
+                            berechnungsZähler++;
+                            unsortMap.put(e.getKey().toString(),berechneteYardstickzeit);//hilfe
+
+                            if (berechnungsZähler == zeitTabelle.size()){
+                                Map<String, Integer> sortedMap = sortByValue(unsortMap);
+
+                                int i = 0;
+                                for (String key : sortedMap.keySet()) {
+                                    i++;
+
+                                    if (i == 1 ){
+
+                                    }
+
+                                }
+                            }
+
+
+
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                        }
+                    });
                 }
             }
         }
     }
+
+
+    public void regattaDatenbankPunkteHelfer (String uuid, int punkte) {
+
+    }
+
+
+
+
+    private static Map<String, Integer> sortByValue(Map<String, Integer> unsortMap) {
+
+        // 1. Convert Map to List of Map
+        List<Map.Entry<String, Integer>> list =
+                new LinkedList<Map.Entry<String, Integer>>(unsortMap.entrySet());
+
+        // 2. Sort list with Collections.sort(), provide a custom Comparator
+        //    Try switch the o1 o2 position for a different order
+        Collections.sort(list, new Comparator<Map.Entry<String, Integer>>() {
+            public int compare(Map.Entry<String, Integer> o1,
+                               Map.Entry<String, Integer> o2) {
+                return (o1.getValue()).compareTo(o2.getValue());
+            }
+        });
+
+        // 3. Loop the sorted list and put it into a new insertion order Map LinkedHashMap
+        Map<String, Integer> sortedMap = new LinkedHashMap<String, Integer>();
+        for (Map.Entry<String, Integer> entry : list) {
+            sortedMap.put(entry.getKey(), entry.getValue());
+        }
+
+        /*
+        //classic iterator example
+        for (Iterator<Map.Entry<String, Integer>> it = list.iterator(); it.hasNext(); ) {
+            Map.Entry<String, Integer> entry = it.next();
+            sortedMap.put(entry.getKey(), entry.getValue());
+        }*/
+
+
+        return sortedMap;
+    }
+
+
 
     //timer
     public void startStoppuhr() {
