@@ -61,7 +61,7 @@ public class Startseite extends AppCompatActivity {
         //Startet den Listener für alle buttons
         doListen();
 
-        regattenAnzahlErmitteln();
+        //regattenAnzahlErmitteln();
 
     }
 
@@ -97,7 +97,7 @@ public class Startseite extends AppCompatActivity {
         regattaBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Startseite.this, Regatta.class);
+                Intent intent = new Intent(Startseite.this, RegattaAuswahl.class);
                 startActivity(intent);
             }
         });

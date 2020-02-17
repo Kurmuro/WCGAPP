@@ -39,11 +39,12 @@ public class Regatta extends AppCompatActivity {
 
     Button btnStartTime, btnTeilnehmerAuswaehlen, btnRegattaFertig;
     Timer stoppuhr;
-    TextView timeview;
+    TextView timeview, auswahlview;
     boolean[] checked;
     static long start;
     static boolean timerisrunning;
     int berechnungsZähler;
+    String auswahl = "Auswahl";
     DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
     static HashMap<String, String> zeitTabelle = new HashMap<>();
@@ -54,12 +55,16 @@ public class Regatta extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.regatta);
 
+        auswahlview = findViewById(R.id.auswahlTV);
         timeview = findViewById(R.id.EtTime);
         btnStartTime = findViewById(R.id.btnStartTime);
         stoppuhr = new Timer();
         btnTeilnehmerAuswaehlen = findViewById(R.id.btnTeilnehmerAuswählen);
         btnRegattaFertig = findViewById(R.id.btnRegattaFertig);
         berechnungsZähler = 0;
+
+        auswahl = getIntent().getStringExtra("auswahl");
+        auswahlview.setText(auswahl);
 
         doListen();
 
