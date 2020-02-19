@@ -44,9 +44,15 @@ public class Regatta extends AppCompatActivity {
     static long start;
     static boolean timerisrunning;
     int berechnungsZähler;
+
+    int regatten = 0;
+    int lauf = 0;
+    int auswahlAnzahl = 0;
+
     String auswahl = "Auswahl";
     DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
+    Map<String, Double> alleUser = new HashMap<>();
     static HashMap<String, String> zeitTabelle = new HashMap<>();
     static HashMap<String, Boolean> userclickable = new HashMap<>();
 
@@ -65,6 +71,22 @@ public class Regatta extends AppCompatActivity {
 
         auswahl = getIntent().getStringExtra("auswahl");
         auswahlview.setText(auswahl);
+
+        mDatabase.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Iterator<DataSnapshot> dataSnapshots = dataSnapshot.getChildren().iterator();
+                while (dataSnapshots.hasNext()) {
+                    DataSnapshot dataSnapshotChild = dataSnapshots.next();
+                    alleUser.put(dataSnapshotChild.getKey(), 99.);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         doListen();
 
@@ -114,10 +136,17 @@ public class Regatta extends AppCompatActivity {
 
             final Map<String, Integer> unsortMap = new HashMap<>();
 
+            for (boolean e :checked){
+                if(e){
+                    auswahlAnzahl++;
+                }
+            }
+
 
             for(final Map.Entry e : zeitTabelle.entrySet()){
                 if(!e.getValue().toString().equals("00:00:00")) {
 
+                    //mit dem yardstick berechnen
                     mDatabase.child("users").child(e.getKey().toString()).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -135,18 +164,87 @@ public class Regatta extends AppCompatActivity {
                             berechnungsZähler++;
                             unsortMap.put(e.getKey().toString(),berechneteYardstickzeit);//hilfe
 
-                            if (berechnungsZähler == zeitTabelle.size()){
+
+                            //berechnung fertig
+                            if (berechnungsZähler >= auswahlAnzahl){
                                 Map<String, Integer> sortedMap = sortByValue(unsortMap);
+
 
                                 int i = 0;
                                 for (String key : sortedMap.keySet()) {
                                     i++;
-
-                                    if (i == 1 ){
-
+                                    if (i == 1){
+                                        alleUser.put(key, 1.);
                                     }
+                                    if(i == 2){
+                                        alleUser.put(key, 3.);
+                                    }
+                                    if(i == 3){
+                                        alleUser.put(key, 5.7);
+                                    }
+                                    if(i == 4){
+                                        alleUser.put(key, 8.);
+                                    }
+                                    if(i == 5){
+                                        alleUser.put(key, 10.);
+                                    }
+                                    if(i == 6){
+                                        alleUser.put(key, 11.7);
+                                    }
+                                    if(i >= 7){
+                                        alleUser.put(key, i+6.);
+                                    }
+                                }
+                                for (String key : alleUser.keySet()) {
+                                    mDatabase.child("regatten").child("1").child("1").child(key).setValue(alleUser.get(key));
+                                }
+
+
+
+
+
+
+
+
+                                //bei neue Regatta
+                                /*if(auswahl.equals("Neue Regatta")){
+                                    mDatabase.child("regatten").addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            regatten = 0;
+                                            Iterator<DataSnapshot> dataSnapshots = dataSnapshot.getChildren().iterator();
+                                            while (dataSnapshots.hasNext()) {
+                                                DataSnapshot dataSnapshotChild = dataSnapshots.next();
+                                                regatten++;
+                                            }
+                                            if(regatten == 0){
+                                                for (String key : alleUser.keySet()) {
+                                                    mDatabase.child("regatten").child("1").child("1").child(key).setValue(alleUser.get(key));
+                                                }
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                        }
+                                    });
+                                }
+
+
+                                //Bei Neuer Lauf
+                                else if(auswahl.equals("Neuer Lauf")){
 
                                 }
+
+                                 */
+
+
+
+
+
+
+
                             }
 
 
@@ -161,11 +259,6 @@ public class Regatta extends AppCompatActivity {
                 }
             }
         }
-    }
-
-
-    public void regattaDatenbankPunkteHelfer (String uuid, int punkte) {
-
     }
 
 
