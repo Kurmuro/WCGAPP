@@ -17,8 +17,13 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.Iterator;
 
 public class TeilnehmerErstellTabelle extends AppCompatActivity {
 
@@ -26,10 +31,13 @@ public class TeilnehmerErstellTabelle extends AppCompatActivity {
     Button logoutBTN, finishBTN;
 
     FirebaseAuth mAuth;
+    DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
     SharedPreferences sharedPreferences;
 
     String orginemail;
+    int regatten = 0;
+    int lauf = 0;
 
     Intent intent;
 
@@ -68,8 +76,6 @@ public class TeilnehmerErstellTabelle extends AppCompatActivity {
         finishBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-
 
                 final String vorname = vornameView.getText().toString();
                 final String nachname = nachnameView.getText().toString();
@@ -88,19 +94,39 @@ public class TeilnehmerErstellTabelle extends AppCompatActivity {
                     mAuth.createUserWithEmailAndPassword(email, "123456")
                             .addOnCompleteListener(TeilnehmerErstellTabelle.this, new OnCompleteListener<AuthResult>() {
                                 @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                public void onComplete(@NonNull final Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
 
 
-                                        FirebaseUser user = task.getResult().getUser();
+                                        final FirebaseUser user = task.getResult().getUser();
                                         mDatabase.child("users").child(user.getUid()).child("Email").setValue(email);
                                         mDatabase.child("users").child(user.getUid()).child("Vorname").setValue(vorname);
                                         mDatabase.child("users").child(user.getUid()).child("Nachname").setValue(nachname);
                                         mDatabase.child("users").child(user.getUid()).child("Bootstyp").setValue(bootstyp);
                                         mDatabase.child("users").child(user.getUid()).child("Passwort").setValue("123456");
                                         mDatabase.child("users").child(user.getUid()).child("Yardstick").setValue(Integer.parseInt(yardstickView.getText().toString()));
-                                        Toast.makeText(TeilnehmerErstellTabelle.this, "Benutzer hinzugefügt", Toast.LENGTH_SHORT).show();
-                                        loginRefresh();
+
+                                        mDatabase.child("regatten").addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                regatten = 0;
+                                                Iterator<DataSnapshot> dataSnapshots = dataSnapshot.getChildren().iterator();
+                                                while (dataSnapshots.hasNext()) {
+                                                    DataSnapshot dataSnapshotChild = dataSnapshots.next();
+                                                    regatten++;
+                                                }
+                                                if(regatten == 0){
+                                                    Toast.makeText(TeilnehmerErstellTabelle.this, "Benutzer hinzugefügt", Toast.LENGTH_SHORT).show();
+                                                    loginRefresh();
+                                                }else{
+                                                    weiter(task.getResult().getUser().getUid());
+                                                }
+                                            }
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                            }
+                                        });
                                     } else {
                                         // Registrieren schief gegangen
                                         Log.w("test", "createUserWithEmail:failure", task.getException());
@@ -116,6 +142,30 @@ public class TeilnehmerErstellTabelle extends AppCompatActivity {
                 }
             }
         });
+    }
+    int hilfsvariable;
+    private void weiter(final String user){
+            mDatabase.child("regatten").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for(int i= 1; i<=regatten;i++) {
+                        lauf = 0;
+                        hilfsvariable = i;
+                        Iterator<DataSnapshot> dataSnapshots = dataSnapshot.child(Integer.toString(hilfsvariable)).getChildren().iterator();
+                        while (dataSnapshots.hasNext()) {
+                            DataSnapshot dataSnapshotChild = dataSnapshots.next();
+                            lauf++;
+                            mDatabase.child("regatten").child(Integer.toString(hilfsvariable)).child(Integer.toString(lauf)).child(user).setValue(99);
+                        }
+                    }
+                    Toast.makeText(TeilnehmerErstellTabelle.this, "Benutzer hinzugefügt", Toast.LENGTH_SHORT).show();
+                    loginRefresh();
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                }
+            });
     }
 
     public void loginRefresh(){

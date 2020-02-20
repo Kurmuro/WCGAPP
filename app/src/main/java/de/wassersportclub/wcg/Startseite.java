@@ -1,7 +1,6 @@
 package de.wassersportclub.wcg;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,7 +13,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -37,7 +35,7 @@ import java.util.Map;
 public class Startseite extends AppCompatActivity {
 
     TextView willkommenstextTV;
-    Button logoutBTN, stegbelegungBTN, verwaltungBTN, blauesbandBTN, regattaBTN, ranglisteAuswahl;
+    Button logoutBTN, stegbelegungBTN, verwaltungBTN, blauesbandBTN, regattaBTN, historieBTN;
 
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -56,7 +54,7 @@ public class Startseite extends AppCompatActivity {
         verwaltungBTN = findViewById(R.id.STARTSEITEverwaltungBTN);
         blauesbandBTN = findViewById(R.id.STARTSEITEblauesbandBTN);
         regattaBTN = findViewById(R.id.STARTSEITEregattaBTN);
-        ranglisteAuswahl = findViewById(R.id.ranglisteWechelBtn);
+        historieBTN = findViewById(R.id.HistorieBtn);
 
         //Startet den Listener für alle buttons
         doListen();
@@ -101,26 +99,11 @@ public class Startseite extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        ranglisteAuswahl.setOnClickListener(new View.OnClickListener() {
+        historieBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String[] liste = new String[regatten];
-                for (int i = regatten; i>0; i--) {
-                    liste[i-1] = "Regatta "+i;
-                }
-                    AlertDialog.Builder builder = new AlertDialog.Builder(Startseite.this);
-                    builder.setCancelable(true);
-                    builder.setTitle("Stand bis");
-                    builder.setItems(liste, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            int position = which+1;
-                            ranglisteAuswahl.setText("Stand bis Regattalauf "+position);
-                            ranglisteErstellen(position);
-                        }
-                    });
-                    AlertDialog dialog = builder.create();
-                    dialog.show();
+                Intent intent = new Intent(Startseite.this, Historie.class);
+                startActivity(intent);
             }
         });
     }

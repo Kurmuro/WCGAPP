@@ -18,7 +18,7 @@
         android:text="Blaues Band"
         android:textColor="#FFFFFF"
         android:textSize="20sp"
-        app:layout_constraintEnd_toStartOf="@+id/button10"
+        app:layout_constraintEnd_toStartOf="@+id/HistorieBtn"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/STARTSEITEstegbelegungBTN" />
 
@@ -66,14 +66,15 @@
         app:layout_constraintTop_toBottomOf="@+id/include" />
 
     <Button
-        android:id="@+id/button10"
+        android:id="@+id/HistorieBtn"
         android:layout_width="0dp"
         android:layout_height="62dp"
         android:layout_marginStart="1dp"
         android:layout_marginLeft="1dp"
         android:layout_marginTop="1dp"
-        android:alpha="0"
+        android:alpha="1"
         android:background="#0131A2"
+        android:text="Historie"
         android:textColor="#FFFFFF"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -94,7 +95,7 @@
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/STARTSEITEregattaBTN"
-        app:layout_constraintTop_toBottomOf="@+id/button10" />
+        app:layout_constraintTop_toBottomOf="@+id/HistorieBtn" />
 
     <include
         android:id="@+id/include"
@@ -116,10 +117,10 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ranglisteWechelBtn" />
+        app:layout_constraintTop_toBottomOf="@id/RegattaAuswahlBtn" />
 
     <Button
-        android:id="@+id/ranglisteWechelBtn"
+        android:id="@+id/RegattaAuswahlBtn"
         android:layout_width="0dp"
         android:layout_height="37dp"
         android:layout_marginStart="8dp"
@@ -127,9 +128,10 @@
         android:layout_marginTop="17dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:gravity="left"
+        android:clickable="false"
+        android:gravity="center"
         android:tag="1"
-        android:text="Stand bis Regattalauf 1"
+        android:text="Rangliste"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/STARTSEITEregattaBTN" />

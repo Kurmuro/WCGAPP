@@ -6,9 +6,17 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.Iterator;
 
 public class RegattaAuswahl extends AppCompatActivity {
 
@@ -17,6 +25,7 @@ public class RegattaAuswahl extends AppCompatActivity {
     Button logoutBTN, neueRegattaBTN, neuerLaufBTN;
 
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +38,26 @@ public class RegattaAuswahl extends AppCompatActivity {
         neuerLaufBTN = findViewById(R.id.NeuerLaufBTN);
         logoutBTN = findViewById(R.id.HEADERlogoutBTN);
 
-        doListen();
+        mDatabase.child("regatten").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                int regatten = 0;
+                Iterator<DataSnapshot> dataSnapshots = dataSnapshot.getChildren().iterator();
+                while (dataSnapshots.hasNext()) {
+                    DataSnapshot dataSnapshotChild = dataSnapshots.next();
+                    regatten++;
+                }
+                if(regatten == 0){
+                    neuerLaufBTN.setAlpha(0);
+                }
+                doListen();
+
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     public void doListen(){

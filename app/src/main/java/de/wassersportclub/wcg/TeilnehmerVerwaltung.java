@@ -34,10 +34,13 @@ public class TeilnehmerVerwaltung extends AppCompatActivity {
     Button logoutBTN, addBTN, editBTN, deleteBTN, resetBTN;
 
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
     SharedPreferences sharedPreferences;
 
     String orginemail;
+    int regatten = 0;
+    int lauf = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,7 +96,7 @@ public class TeilnehmerVerwaltung extends AppCompatActivity {
         resetBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                displayConfirmView();
             }
         });
     }
@@ -166,6 +169,27 @@ public class TeilnehmerVerwaltung extends AppCompatActivity {
         dialog.show();
     }
 
+    public void displayConfirmView(){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(true);
+        builder.setTitle("Sicher?");
+
+        builder.setPositiveButton("Ja", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                mDatabase.child("regatten").removeValue();
+                Toast.makeText(TeilnehmerVerwaltung.this, "Regatten Gelöscht!", Toast.LENGTH_LONG).show();
+
+            }
+        });
+        builder.setNegativeButton("Abbrechen", null);
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
     public void displayEditView(String title, String[] userlist, final List<String> passwort, final List<String> email, final List<String> useruid){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setCancelable(true);
@@ -184,18 +208,63 @@ public class TeilnehmerVerwaltung extends AppCompatActivity {
         mAuth.signInWithEmailAndPassword(email.get(which),passwort.get(which))
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
+                    public void onComplete(@NonNull final Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Einloggen erfolgreich
                             FirebaseDatabase.getInstance().getReference().child("users").child(useruid.get(which)).removeValue();
                             mAuth.getCurrentUser().delete();
-                            mAuth.signInWithEmailAndPassword(orginemail, sharedPreferences.getString("passwort", "keinpasswortvorhanden"));
-                            Toast.makeText(TeilnehmerVerwaltung.this, "Benutzer gelöscht", Toast.LENGTH_SHORT).show();
+
+                            mDatabase.child("regatten").addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    regatten = 0;
+                                    Iterator<DataSnapshot> dataSnapshots = dataSnapshot.getChildren().iterator();
+                                    while (dataSnapshots.hasNext()) {
+                                        DataSnapshot dataSnapshotChild = dataSnapshots.next();
+                                        regatten++;
+                                    }
+                                    if(regatten == 0){
+                                        mAuth.signInWithEmailAndPassword(orginemail, sharedPreferences.getString("passwort", "keinpasswortvorhanden"));
+                                        Toast.makeText(TeilnehmerVerwaltung.this, "Benutzer gelöscht", Toast.LENGTH_SHORT).show();
+                                    }else{
+                                        weiter(task.getResult().getUser().getUid());
+                                    }
+                                }
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
                         } else {
                             // Einloggen schief gegangen
                         }
                     }
                 });
+    }
+
+    int hilfsvariable;
+    private void weiter(final String user){
+        mDatabase.child("regatten").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(int i= 1; i<=regatten;i++) {
+                    lauf = 0;
+                    hilfsvariable = i;
+                    Iterator<DataSnapshot> dataSnapshots = dataSnapshot.child(Integer.toString(hilfsvariable)).getChildren().iterator();
+                    while (dataSnapshots.hasNext()) {
+                        DataSnapshot dataSnapshotChild = dataSnapshots.next();
+                        lauf++;
+                        mDatabase.child("regatten").child(Integer.toString(hilfsvariable)).child(Integer.toString(lauf)).child(user).removeValue();
+                    }
+                }
+                mAuth.signInWithEmailAndPassword(orginemail, sharedPreferences.getString("passwort", "keinpasswortvorhanden"));
+                Toast.makeText(TeilnehmerVerwaltung.this, "Benutzer gelöscht", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
     }
 
     public void editUser(final String useruid){

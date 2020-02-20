@@ -87,6 +87,21 @@ public class Regatta extends AppCompatActivity {
 
             }
         });
+        mDatabase.child("regatten").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                regatten = 0;
+                Iterator<DataSnapshot> dataSnapshots = dataSnapshot.getChildren().iterator();
+                while (dataSnapshots.hasNext()) {
+                    DataSnapshot dataSnapshotChild = dataSnapshots.next();
+                    regatten++;
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         doListen();
 
@@ -195,9 +210,6 @@ public class Regatta extends AppCompatActivity {
                                         alleUser.put(key, i+6.);
                                     }
                                 }
-                                for (String key : alleUser.keySet()) {
-                                    mDatabase.child("regatten").child("1").child("1").child(key).setValue(alleUser.get(key));
-                                }
 
 
 
@@ -207,37 +219,37 @@ public class Regatta extends AppCompatActivity {
 
 
                                 //bei neue Regatta
-                                /*if(auswahl.equals("Neue Regatta")){
-                                    mDatabase.child("regatten").addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                            regatten = 0;
-                                            Iterator<DataSnapshot> dataSnapshots = dataSnapshot.getChildren().iterator();
-                                            while (dataSnapshots.hasNext()) {
-                                                DataSnapshot dataSnapshotChild = dataSnapshots.next();
-                                                regatten++;
-                                            }
-                                            if(regatten == 0){
-                                                for (String key : alleUser.keySet()) {
-                                                    mDatabase.child("regatten").child("1").child("1").child(key).setValue(alleUser.get(key));
-                                                }
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                        }
-                                    });
+                                if(auswahl.equals("Neue Regatta")){
+                                    for (String key : alleUser.keySet()) {
+                                        mDatabase.child("regatten").child(Integer.toString(regatten+1)).child("1").child(key).setValue(alleUser.get(key));
+                                        Toast.makeText(Regatta.this, "Erfolgreich gespeichert!", Toast.LENGTH_LONG).show();
+                                        regattaAbbrechen();
+                                    }
                                 }
 
 
                                 //Bei Neuer Lauf
                                 else if(auswahl.equals("Neuer Lauf")){
-
+                                    mDatabase.child("regatten").child(Integer.toString(regatten)).addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            lauf = 0;
+                                            Iterator<DataSnapshot> dataSnapshots = dataSnapshot.getChildren().iterator();
+                                            while (dataSnapshots.hasNext()) {
+                                                DataSnapshot dataSnapshotChild = dataSnapshots.next();
+                                                lauf++;
+                                            }
+                                            for (String key : alleUser.keySet()) {
+                                                mDatabase.child("regatten").child(Integer.toString(regatten)).child(Integer.toString(lauf+1)).child(key).setValue(alleUser.get(key));
+                                                Toast.makeText(Regatta.this, "Erfolgreich gespeichert!", Toast.LENGTH_LONG).show();
+                                                regattaAbbrechen();
+                                            }
+                                        }
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                                        }
+                                    });
                                 }
-
-                                 */
 
 
 
