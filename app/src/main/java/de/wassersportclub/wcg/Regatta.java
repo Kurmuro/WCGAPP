@@ -223,8 +223,8 @@ public class Regatta extends AppCompatActivity {
                                     for (String key : alleUser.keySet()) {
                                         mDatabase.child("regatten").child(Integer.toString(regatten+1)).child("1").child(key).setValue(alleUser.get(key));
                                         Toast.makeText(Regatta.this, "Erfolgreich gespeichert!", Toast.LENGTH_LONG).show();
-                                        regattaAbbrechen();
                                     }
+                                    regattaAbbrechen();
                                 }
 
 
@@ -242,8 +242,8 @@ public class Regatta extends AppCompatActivity {
                                             for (String key : alleUser.keySet()) {
                                                 mDatabase.child("regatten").child(Integer.toString(regatten)).child(Integer.toString(lauf+1)).child(key).setValue(alleUser.get(key));
                                                 Toast.makeText(Regatta.this, "Erfolgreich gespeichert!", Toast.LENGTH_LONG).show();
-                                                regattaAbbrechen();
                                             }
+                                            regattaAbbrechen();
                                         }
                                         @Override
                                         public void onCancelled(@NonNull DatabaseError databaseError) {

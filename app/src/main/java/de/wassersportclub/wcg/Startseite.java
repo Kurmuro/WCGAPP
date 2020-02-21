@@ -40,6 +40,9 @@ public class Startseite extends AppCompatActivity {
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     int regatten;
+    int lauf;
+
+    HashMap<String, Double> allePunkte = new HashMap<>();
 
 
     @Override
@@ -59,7 +62,7 @@ public class Startseite extends AppCompatActivity {
         //Startet den Listener für alle buttons
         doListen();
 
-        //regattenAnzahlErmitteln();
+        regattenAnzahlErmitteln();
 
     }
 
@@ -128,7 +131,7 @@ public class Startseite extends AppCompatActivity {
                     ;
                 }
                 if(regatten != 0){
-                    ranglisteErstellen(1);
+                    ranglisteErstellen(regatten);
                 }
             }
 
@@ -139,7 +142,8 @@ public class Startseite extends AppCompatActivity {
         });
     }
 
-    public void ranglisteErstellen(int anzahlRegatten){
+    int hilfsvariable;
+    public void ranglisteErstellen(final int anzahlRegatten){
 
         final Map<String, String> useridListe = new HashMap<>();
         final Map<String, Integer> unsortMap = new HashMap<>();
@@ -151,7 +155,65 @@ public class Startseite extends AppCompatActivity {
         punkte.add("Punkte");
         rang.add("Rang");
 
-        for (int i = anzahlRegatten; i>0; i--) {
+        mDatabase.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    Iterator<DataSnapshot> dataSnapshots = dataSnapshot.child("").getChildren().iterator();
+                    while (dataSnapshots.hasNext()) {
+                        DataSnapshot dataSnapshotChild = dataSnapshots.next();
+                        useridListe.put(dataSnapshotChild.getKey(), dataSnapshotChild.child("Vorname").getValue().toString());
+                    }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+
+        mDatabase.child("regatten").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                //regatten anzahl
+                for(int i= 1; i<=anzahlRegatten;i++) {
+                    lauf = 0;
+                    hilfsvariable = i;
+                    //für jede regatta
+                    Iterator<DataSnapshot> dataSnapshots = dataSnapshot.child(Integer.toString(hilfsvariable)).getChildren().iterator();
+                    while (dataSnapshots.hasNext()) {
+                        DataSnapshot dataSnapshotChild = dataSnapshots.next();
+                        lauf++;
+
+                        //für jeden lauf
+                        Iterator<DataSnapshot> dataSnapshots2 = dataSnapshotChild.child("").getChildren().iterator();
+                        while (dataSnapshots2.hasNext()) {
+                            DataSnapshot dataSnapshotChild2 = dataSnapshots2.next();
+                            if (Double.parseDouble(dataSnapshotChild2.getValue().toString()) != 99.) {
+                                if (!allePunkte.containsKey(dataSnapshotChild2.getKey())) {
+                                    allePunkte.put(dataSnapshotChild2.getKey(), Double.parseDouble(dataSnapshotChild2.getValue().toString()));
+                                }else{
+                                    allePunkte.put(dataSnapshotChild2.getKey(),allePunkte.get(dataSnapshotChild2.getKey())+Double.parseDouble(dataSnapshotChild2.getValue().toString()));
+                                }
+                            }
+                        }
+                    }
+                }
+                Map<String, Double> sortedMap = sortByValue(allePunkte);
+                int i = 0;
+                for (String key : sortedMap.keySet()) {
+                    i++;
+                    rang.add(Integer.toString(i));
+                    name.add(useridListe.get(key));
+                    punkte.add(Double.toString(sortedMap.get(key)));
+                }
+                ListView list = findViewById(R.id.rangliste);
+                list.setAdapter(new MyListAdapterRang(Startseite.this, R.layout.rangliste_zeile, name, punkte, rang));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+        /*for (int i = anzahlRegatten; i>0; i--) {
             final int p = i;
             mDatabase.child("regatten").child(Integer.toString(i)).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -194,27 +256,29 @@ public class Startseite extends AppCompatActivity {
                 }
             });
         }
+
+         */
     }
 
 
-    private static Map<String, Integer> sortByValue(Map<String, Integer> unsortMap) {
+    private static Map<String, Double> sortByValue(Map<String, Double> unsortMap) {
 
         // 1. Convert Map to List of Map
-        List<Map.Entry<String, Integer>> list =
-                new LinkedList<Map.Entry<String, Integer>>(unsortMap.entrySet());
+        List<Map.Entry<String, Double>> list =
+                new LinkedList<>(unsortMap.entrySet());
 
         // 2. Sort list with Collections.sort(), provide a custom Comparator
         //    Try switch the o1 o2 position for a different order
-        Collections.sort(list, new Comparator<Map.Entry<String, Integer>>() {
-            public int compare(Map.Entry<String, Integer> o1,
-                               Map.Entry<String, Integer> o2) {
+        Collections.sort(list, new Comparator<Map.Entry<String, Double>>() {
+            public int compare(Map.Entry<String, Double> o1,
+                               Map.Entry<String, Double> o2) {
                 return (o1.getValue()).compareTo(o2.getValue());
             }
         });
 
         // 3. Loop the sorted list and put it into a new insertion order Map LinkedHashMap
-        Map<String, Integer> sortedMap = new LinkedHashMap<String, Integer>();
-        for (Map.Entry<String, Integer> entry : list) {
+        Map<String, Double> sortedMap = new LinkedHashMap<>();
+        for (Map.Entry<String, Double> entry : list) {
             sortedMap.put(entry.getKey(), entry.getValue());
         }
 
