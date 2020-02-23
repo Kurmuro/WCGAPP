@@ -41,8 +41,11 @@ public class Startseite extends AppCompatActivity {
     DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     int regatten;
     int lauf;
+    int gesammtAnzahlLäufe = 0;
+    double vorherigePunktzahl = 0;
 
     HashMap<String, Double> allePunkte = new HashMap<>();
+    HashMap<String, List<Double>> einzelnePunkte= new HashMap<>();
 
 
     @Override
@@ -142,6 +145,19 @@ public class Startseite extends AppCompatActivity {
         });
     }
 
+    public List<Double> get(String key) {
+        return einzelnePunkte.get(key);
+    }
+
+    public void put(String key, Double value) {
+        List<Double> list = get(key);
+        if(list == null){
+            list = new ArrayList<Double>();
+            einzelnePunkte.put(key, list);
+        }
+        list.add(value);
+    }
+
     int hilfsvariable;
     public void ranglisteErstellen(final int anzahlRegatten){
 
@@ -182,28 +198,57 @@ public class Startseite extends AppCompatActivity {
                     while (dataSnapshots.hasNext()) {
                         DataSnapshot dataSnapshotChild = dataSnapshots.next();
                         lauf++;
+                        gesammtAnzahlLäufe++;
 
                         //für jeden lauf
                         Iterator<DataSnapshot> dataSnapshots2 = dataSnapshotChild.child("").getChildren().iterator();
                         while (dataSnapshots2.hasNext()) {
                             DataSnapshot dataSnapshotChild2 = dataSnapshots2.next();
-                            if (Double.parseDouble(dataSnapshotChild2.getValue().toString()) != 99.) {
+                            put(dataSnapshotChild2.getKey(), Double.parseDouble(dataSnapshotChild2.getValue().toString()));
                                 if (!allePunkte.containsKey(dataSnapshotChild2.getKey())) {
                                     allePunkte.put(dataSnapshotChild2.getKey(), Double.parseDouble(dataSnapshotChild2.getValue().toString()));
                                 }else{
                                     allePunkte.put(dataSnapshotChild2.getKey(),allePunkte.get(dataSnapshotChild2.getKey())+Double.parseDouble(dataSnapshotChild2.getValue().toString()));
                                 }
-                            }
                         }
                     }
                 }
+
+                System.out.println("test "+allePunkte.toString());
+                for (String key : allePunkte.keySet()) {
+                    List<Double> list = get(key);
+                    if(list == null){
+                        list = new ArrayList<Double>();
+                    }
+                    Collections.sort(list);
+                    if(allePunkte.get(key) != regatten*gesammtAnzahlLäufe*99) {
+                        if (gesammtAnzahlLäufe == 5) {
+                            allePunkte.put(key, allePunkte.get(key) - list.get(list.size() - 1));
+                        } else if (gesammtAnzahlLäufe == 7) {
+                            allePunkte.put(key, allePunkte.get(key) - list.get(list.size() - 1) - list.get(list.size() - 2));
+                        }else if (gesammtAnzahlLäufe == 10) {
+                            allePunkte.put(key, allePunkte.get(key) - list.get(list.size() - 1) - list.get(list.size() - 2) - list.get(list.size() - 3));
+                        }
+                    }
+                }
+                System.out.println("test "+allePunkte.toString());
+
                 Map<String, Double> sortedMap = sortByValue(allePunkte);
-                int i = 0;
+
+                int i = 1;
                 for (String key : sortedMap.keySet()) {
-                    i++;
-                    rang.add(Integer.toString(i));
-                    name.add(useridListe.get(key));
-                    punkte.add(Double.toString(sortedMap.get(key)));
+                    if(sortedMap.get(key) != regatten*gesammtAnzahlLäufe*99) {
+                        if(vorherigePunktzahl != sortedMap.get(key) && (vorherigePunktzahl != 0)) {
+                            i++;
+                        }
+                        vorherigePunktzahl = sortedMap.get(key);
+                        rang.add(Integer.toString(i));
+                        name.add(useridListe.get(key));
+                        double temp = sortedMap.get(key) * 100;
+                        temp = Math.round(temp);
+                        temp = temp / 100;
+                        punkte.add(Double.toString(temp));
+                    }
                 }
                 ListView list = findViewById(R.id.rangliste);
                 list.setAdapter(new MyListAdapterRang(Startseite.this, R.layout.rangliste_zeile, name, punkte, rang));
@@ -213,51 +258,6 @@ public class Startseite extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
-        /*for (int i = anzahlRegatten; i>0; i--) {
-            final int p = i;
-            mDatabase.child("regatten").child(Integer.toString(i)).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    Iterator<DataSnapshot> dataSnapshots = dataSnapshot.getChildren().iterator();
-
-                    while (dataSnapshots.hasNext()) {
-                        DataSnapshot dataSnapshotChild = dataSnapshots.next();
-
-                        if(!unsortMap.containsKey(dataSnapshotChild.getKey())) {
-                            unsortMap.put(dataSnapshotChild.getKey(), Integer.parseInt(dataSnapshotChild.child("Punkte").getValue().toString()));
-                        }else{
-                            unsortMap.put(dataSnapshotChild.getKey(),unsortMap.get(dataSnapshotChild.getKey())+Integer.parseInt(dataSnapshotChild.child("Punkte").getValue().toString()));
-                        }
-
-                        if(!useridListe.containsKey(dataSnapshotChild.getKey())) {
-                            useridListe.put(dataSnapshotChild.getKey(), dataSnapshotChild.child("Name").getValue().toString());
-                        }
-                    }
-
-                    if(p == 1){
-                        Map<String, Integer> sortedMap = sortByValue(unsortMap);
-                        int i = 0;
-                        for (String key : sortedMap.keySet()) {
-                            i++;
-                            rang.add(Integer.toString(i));
-                            name.add(useridListe.get(key));
-                            punkte.add(Integer.toString(sortedMap.get(key)));
-
-                        }
-
-                        ListView list = findViewById(R.id.rangliste);
-                        list.setAdapter(new MyListAdapterRang(Startseite.this, R.layout.rangliste_zeile, name, punkte, rang));
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-        }
-
-         */
     }
 
 

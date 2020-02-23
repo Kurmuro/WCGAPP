@@ -189,7 +189,7 @@ public class Regatta extends AppCompatActivity {
                                 for (String key : sortedMap.keySet()) {
                                     i++;
                                     if (i == 1){
-                                        alleUser.put(key, 1.);
+                                        alleUser.put(key, 0.);
                                     }
                                     if(i == 2){
                                         alleUser.put(key, 3.);
