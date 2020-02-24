@@ -31,7 +31,7 @@ import java.util.List;
 public class TeilnehmerVerwaltung extends AppCompatActivity {
 
     TextView willkommenstextTV;
-    Button logoutBTN, addBTN, editBTN, deleteBTN, resetBTN;
+    Button logoutBTN, addBTN, editBTN, deleteBTN, resetBTN, passwortÄndernBTN;
 
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -58,6 +58,7 @@ public class TeilnehmerVerwaltung extends AppCompatActivity {
         editBTN = findViewById(R.id.VERWALTUNGändernBTN);
         deleteBTN = findViewById(R.id.VERWALTUNGlöschenBTN);
         resetBTN = findViewById(R.id.VERWALTUNGsaisonresetBTN);
+        passwortÄndernBTN = findViewById(R.id.passwortÄndernBTN);
 
 
         //Startet den Listener für alle buttons
@@ -97,6 +98,14 @@ public class TeilnehmerVerwaltung extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 displayConfirmView();
+            }
+        });
+
+        passwortÄndernBTN.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(TeilnehmerVerwaltung.this, Passwortaendern.class);
+                startActivity(intent);
             }
         });
     }

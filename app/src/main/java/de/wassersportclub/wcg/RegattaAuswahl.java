@@ -22,7 +22,7 @@ public class RegattaAuswahl extends AppCompatActivity {
 
     TextView willkommenstextTV;
 
-    Button logoutBTN, neueRegattaBTN, neuerLaufBTN;
+    Button logoutBTN, neueRegattaBTN, neuerLaufBTN, passwortÄndernBTN;
 
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -37,6 +37,7 @@ public class RegattaAuswahl extends AppCompatActivity {
         neueRegattaBTN = findViewById(R.id.NeueRegattaBTN);
         neuerLaufBTN = findViewById(R.id.NeuerLaufBTN);
         logoutBTN = findViewById(R.id.HEADERlogoutBTN);
+        passwortÄndernBTN = findViewById(R.id.passwortÄndernBTN);
 
         mDatabase.child("regatten").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -80,6 +81,13 @@ public class RegattaAuswahl extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(RegattaAuswahl.this, Regatta.class);
                 intent.putExtra("auswahl", "Neuer Lauf");
+                startActivity(intent);
+            }
+        });
+        passwortÄndernBTN.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(RegattaAuswahl.this, Passwortaendern.class);
                 startActivity(intent);
             }
         });

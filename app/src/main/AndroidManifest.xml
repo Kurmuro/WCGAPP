@@ -17,6 +17,7 @@
         <activity android:name=".Historie" />
         <activity android:name=".RegattaAuswahl" />
         <activity android:name=".Blauesband" />
+        <activity android:name=".Passwortaendern" />
         <activity android:name=".Steganlage" />
         <activity android:name=".Startseite" />
         <activity android:name=".MainActivity">

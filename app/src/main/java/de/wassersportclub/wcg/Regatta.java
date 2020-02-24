@@ -144,6 +144,7 @@ public class Regatta extends AppCompatActivity {
             }
         });
 
+
     }
 
     private void zeitBerechnung() {

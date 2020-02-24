@@ -1,12 +1,12 @@
 package de.wassersportclub.wcg;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -14,7 +14,7 @@ public class Blauesband extends AppCompatActivity {
 
     TextView willkommenstextTV;
 
-    Button logoutBTN, regelnBTN;
+    Button logoutBTN, regelnBTN, passwortÄndernBTN;
 
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
@@ -27,6 +27,7 @@ public class Blauesband extends AppCompatActivity {
 
         regelnBTN = findViewById(R.id.BLAUESBANDregelnBTN);
         logoutBTN = findViewById(R.id.HEADERlogoutBTN);
+        passwortÄndernBTN = findViewById(R.id.passwortÄndernBTN);
 
         doListen();
     }
@@ -36,6 +37,13 @@ public class Blauesband extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 logout();
+            }
+        });
+        passwortÄndernBTN.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Blauesband.this, Passwortaendern.class);
+                startActivity(intent);
             }
         });
         regelnBTN.setOnClickListener(new View.OnClickListener() {

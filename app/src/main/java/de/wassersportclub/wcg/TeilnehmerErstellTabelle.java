@@ -28,7 +28,7 @@ import java.util.Iterator;
 public class TeilnehmerErstellTabelle extends AppCompatActivity {
 
     TextView willkommenstextTV, emailView, vornameView, nachnameView, bootstypView, yardstickView;
-    Button logoutBTN, finishBTN;
+    Button logoutBTN, finishBTN, passwortÄndernBTN;
 
     FirebaseAuth mAuth;
     DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -58,6 +58,7 @@ public class TeilnehmerErstellTabelle extends AppCompatActivity {
         nachnameView = findViewById(R.id.TABLEnachname);
         bootstypView = findViewById(R.id.TABLEbootstyp);
         yardstickView = findViewById(R.id.TABLEyardstick);
+        passwortÄndernBTN = findViewById(R.id.passwortÄndernBTN);
 
         sharedPreferences = this.getSharedPreferences("de.wassersportclub.wcg", MODE_PRIVATE);
 
@@ -71,6 +72,13 @@ public class TeilnehmerErstellTabelle extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 logout();
+            }
+        });
+        passwortÄndernBTN.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(TeilnehmerErstellTabelle.this, Passwortaendern.class);
+                startActivity(intent);
             }
         });
         finishBTN.setOnClickListener(new View.OnClickListener() {

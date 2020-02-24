@@ -35,7 +35,7 @@ import java.util.Map;
 public class Startseite extends AppCompatActivity {
 
     TextView willkommenstextTV;
-    Button logoutBTN, stegbelegungBTN, verwaltungBTN, blauesbandBTN, regattaBTN, historieBTN;
+    Button logoutBTN, stegbelegungBTN, verwaltungBTN, blauesbandBTN, regattaBTN, historieBTN, passwortÄndernBTN;
 
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -61,12 +61,17 @@ public class Startseite extends AppCompatActivity {
         blauesbandBTN = findViewById(R.id.STARTSEITEblauesbandBTN);
         regattaBTN = findViewById(R.id.STARTSEITEregattaBTN);
         historieBTN = findViewById(R.id.HistorieBtn);
+        passwortÄndernBTN = findViewById(R.id.passwortÄndernBTN);
 
         //Startet den Listener für alle buttons
         doListen();
 
         regattenAnzahlErmitteln();
 
+    }
+
+    public void onBackPressed(){
+        finish();
     }
 
     //Hört ob knöpfe gedrückt wurden
@@ -109,6 +114,13 @@ public class Startseite extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(Startseite.this, Historie.class);
+                startActivity(intent);
+            }
+        });
+        passwortÄndernBTN.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Startseite.this, Passwortaendern.class);
                 startActivity(intent);
             }
         });
@@ -213,8 +225,6 @@ public class Startseite extends AppCompatActivity {
                         }
                     }
                 }
-
-                System.out.println("test "+allePunkte.toString());
                 for (String key : allePunkte.keySet()) {
                     List<Double> list = get(key);
                     if(list == null){
@@ -231,7 +241,6 @@ public class Startseite extends AppCompatActivity {
                         }
                     }
                 }
-                System.out.println("test "+allePunkte.toString());
 
                 Map<String, Double> sortedMap = sortByValue(allePunkte);
 
