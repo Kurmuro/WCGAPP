@@ -73,6 +73,11 @@ public class MainActivity extends AppCompatActivity {
     public void login(){
         Intent intent = new Intent(this, Startseite.class);
         startActivity(intent);
+        finish();
+    }
+
+    public void onBackPressed(){
+        return;
     }
 }
 

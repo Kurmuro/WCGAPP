@@ -119,7 +119,6 @@ public class Regatta extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
         regattaAbbrechen();
     }
 

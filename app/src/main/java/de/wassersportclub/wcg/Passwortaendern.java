@@ -11,6 +11,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -78,26 +80,42 @@ public class Passwortaendern extends AppCompatActivity {
 
     private void passwortÄndern() {
         String altesPWString = altesPW.getText().toString();
-        String neuesPWString1 = neuesPasswort1.getText().toString();
+        final String neuesPWString1 = neuesPasswort1.getText().toString();
         String neuesPWString2 = neuesPasswort2.getText().toString();
 
         if(aktuellesPasswort != null) {
             if (altesPWString != null && !altesPWString.isEmpty() && neuesPWString1 != null && !neuesPWString1.isEmpty() && neuesPWString2 != null && !neuesPWString2.isEmpty()) {
                 if (altesPWString.equals(aktuellesPasswort)) {
-                    if (neuesPWString1.equals(neuesPWString2)) {
-                        mAuth.getCurrentUser().updatePassword(neuesPWString1);
-                        user.child("Passwort").setValue(neuesPWString1);
-                        Toast.makeText(this, "Passwort geändert", Toast.LENGTH_LONG).show();
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                Passwortaendern.this.finish();
-                            }
-                        }, 2000);
+                    if(neuesPWString1.length() >= 6) {
+                        if (neuesPWString1.equals(neuesPWString2)) {
+                            mAuth.getCurrentUser().updatePassword(neuesPWString1).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        user.child("Passwort").setValue(neuesPWString1);
+                                        Toast.makeText(Passwortaendern.this, "Passwort geändert", Toast.LENGTH_LONG).show();
+                                        new Handler().postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                Passwortaendern.this.finish();
+                                            }
+                                        }, 2000);
+                                    } else {
+                                        if (task.getException().getMessage().equals("This operation is sensitive and requires recent authentication. Log in again before retrying this request.")) {
+                                            Toast.makeText(Passwortaendern.this, "Logge dich zuerst erneut ein", Toast.LENGTH_LONG).show();
+                                        } else {
+                                            Toast.makeText(Passwortaendern.this, "Irgendwas ist schief gelaufen", Toast.LENGTH_LONG).show();
+                                        }
+                                    }
+                                }
+                            });
 
 
-                    } else {
-                        Toast.makeText(Passwortaendern.this, "Fehler: Passwörter unterschiedlich", Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(Passwortaendern.this, "Fehler: Passwörter unterschiedlich", Toast.LENGTH_LONG).show();
+                        }
+                    }else{
+                        Toast.makeText(Passwortaendern.this, "Das Passwort muss 6 Zeichen lang sein", Toast.LENGTH_LONG).show();
                     }
                 } else {
                     Toast.makeText(Passwortaendern.this, "Fehler: Falsches Passwort", Toast.LENGTH_LONG).show();

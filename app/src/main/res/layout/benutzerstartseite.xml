@@ -8,30 +8,15 @@
 
 
     <Button
-        android:id="@+id/PLATZHALTER"
-        android:layout_width="0dp"
-        android:layout_height="62dp"
-        android:alpha="0"
-        android:background="#0131A2"
-        android:text="PLATZHALTER"
-        android:textColor="#FFFFFF"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/HistorieBtn"
-        app:layout_constraintTop_toBottomOf="@+id/STARTSEITEregattaBTN" />
-
-    <Button
         android:id="@+id/STARTSEITEblauesbandBTN"
         android:layout_width="0dp"
         android:layout_height="62dp"
         android:layout_marginTop="1dp"
-        android:layout_marginEnd="1dp"
-        android:layout_marginRight="1dp"
         android:background="#0131A2"
         android:text="Blaues Band"
         android:textColor="#FFFFFF"
         android:textSize="20sp"
-        app:layout_constraintEnd_toStartOf="@+id/STARTSEITEregattaBTN"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/STARTSEITEstegbelegungBTN" />
 
@@ -39,43 +24,12 @@
         android:id="@+id/STARTSEITEstegbelegungBTN"
         android:layout_width="0dp"
         android:layout_height="62dp"
-        android:layout_marginEnd="1dp"
-        android:layout_marginRight="1dp"
         android:background="#0131A2"
         android:text="Stegbelegung"
         android:textColor="#FFFFFF"
         android:textSize="20sp"
-        app:layout_constraintEnd_toStartOf="@+id/STARTSEITEverwaltungBTN"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/include" />
-
-    <Button
-        android:id="@+id/STARTSEITEregattaBTN"
-        android:layout_width="0dp"
-        android:layout_height="62dp"
-        android:layout_marginStart="1dp"
-        android:layout_marginLeft="1dp"
-        android:layout_marginTop="1dp"
-        android:background="#0131A2"
-        android:text="Regatta"
-        android:textColor="#FFFFFF"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/STARTSEITEblauesbandBTN"
-        app:layout_constraintTop_toBottomOf="@+id/STARTSEITEstegbelegungBTN" />
-
-    <Button
-        android:id="@+id/STARTSEITEverwaltungBTN"
-        android:layout_width="0dp"
-        android:layout_height="62dp"
-        android:layout_marginStart="1dp"
-        android:layout_marginLeft="1dp"
-        android:background="#0131A2"
-        android:text="Teilnehmer verwalten"
-        android:textColor="#FFFFFF"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/STARTSEITEstegbelegungBTN"
         app:layout_constraintTop_toBottomOf="@+id/include" />
 
     <Button
@@ -88,7 +42,7 @@
         android:text="Historie"
         android:textColor="#FFFFFF"
         android:textSize="20sp"
-        app:layout_constraintEnd_toStartOf="@+id/PLATZHALTER"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/STARTSEITEblauesbandBTN" />
 

@@ -94,6 +94,11 @@ public class RegattaAuswahl extends AppCompatActivity {
 
     }
 
+    public void onBackPressed(){
+        Intent intent = new Intent(this, Startseite.class);
+        startActivity(intent);
+    }
+
     //Loggt den benutzer aus
     public void logout(){
         mAuth.signOut();

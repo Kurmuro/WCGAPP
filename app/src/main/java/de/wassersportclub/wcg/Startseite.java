@@ -31,6 +31,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Startseite extends AppCompatActivity {
 
@@ -43,35 +45,125 @@ public class Startseite extends AppCompatActivity {
     int lauf;
     int gesammtAnzahlLäufe = 0;
     double vorherigePunktzahl = 0;
-
+    ListView list;
+    Timer t = new Timer();
     HashMap<String, Double> allePunkte = new HashMap<>();
     HashMap<String, List<Double>> einzelnePunkte= new HashMap<>();
-
+    List<String> rang = new ArrayList<>();
+    List<String> name = new ArrayList<>();
+    List<String> punkte = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.adminstartseite);
-        willkommenstextTV = findViewById(R.id.HEADERwillkommenstextTV);
-        willkommenstextTV.setText("Willkommen " + mAuth.getCurrentUser().getEmail());
+        setContentView(R.layout.benutzerstartseite);
 
-        logoutBTN = findViewById(R.id.HEADERlogoutBTN);
-        stegbelegungBTN = findViewById(R.id.STARTSEITEstegbelegungBTN);
-        verwaltungBTN = findViewById(R.id.STARTSEITEverwaltungBTN);
-        blauesbandBTN = findViewById(R.id.STARTSEITEblauesbandBTN);
-        regattaBTN = findViewById(R.id.STARTSEITEregattaBTN);
-        historieBTN = findViewById(R.id.HistorieBtn);
-        passwortÄndernBTN = findViewById(R.id.passwortÄndernBTN);
+        if(mAuth.getCurrentUser().getEmail().equals("marcelianer36@gmail.com") || mAuth.getCurrentUser().getEmail().equals("ma.walter@bhg-mobile.de")) {
+            setContentView(R.layout.adminstartseite);
+            willkommenstextTV = findViewById(R.id.HEADERwillkommenstextTV);
+            willkommenstextTV.setText("Willkommen " + mAuth.getCurrentUser().getEmail());
 
-        //Startet den Listener für alle buttons
-        doListen();
+            logoutBTN = findViewById(R.id.HEADERlogoutBTN);
+            stegbelegungBTN = findViewById(R.id.STARTSEITEstegbelegungBTN);
+            verwaltungBTN = findViewById(R.id.STARTSEITEverwaltungBTN);
+            blauesbandBTN = findViewById(R.id.STARTSEITEblauesbandBTN);
+            regattaBTN = findViewById(R.id.STARTSEITEregattaBTN);
+            historieBTN = findViewById(R.id.HistorieBtn);
+            passwortÄndernBTN = findViewById(R.id.passwortÄndernBTN);
+            list = findViewById(R.id.rangliste);
 
-        regattenAnzahlErmitteln();
+            //Startet den Listener für alle buttons
+            doListen();
+
+
+
+            t.schedule(new TimerTask(){
+
+                @Override
+                public void run() {
+                    regattenAnzahlErmitteln();
+                }
+
+            }, 0, 5000); //alle 5 sekunden...
+
+
+            return;
+        }
+
+        mDatabase.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Iterator<DataSnapshot> dataSnapshots = dataSnapshot.child("").getChildren().iterator();
+                while (dataSnapshots.hasNext()) {
+                    DataSnapshot dataSnapshotChild = dataSnapshots.next();
+                    if(mAuth.getCurrentUser().getUid().equals(dataSnapshotChild.getKey())) {
+                        if (dataSnapshotChild.child("Admin").exists()) {
+                            if (dataSnapshotChild.child("Admin").getValue().toString().equals("true")) {
+                                setContentView(R.layout.adminstartseite);
+                            }
+                        }
+                    }
+                }
+
+                willkommenstextTV = findViewById(R.id.HEADERwillkommenstextTV);
+                willkommenstextTV.setText("Willkommen " + mAuth.getCurrentUser().getEmail());
+
+                logoutBTN = findViewById(R.id.HEADERlogoutBTN);
+                stegbelegungBTN = findViewById(R.id.STARTSEITEstegbelegungBTN);
+                verwaltungBTN = null;
+                blauesbandBTN = findViewById(R.id.STARTSEITEblauesbandBTN);
+                regattaBTN = null;
+                historieBTN = findViewById(R.id.HistorieBtn);
+                passwortÄndernBTN = findViewById(R.id.passwortÄndernBTN);
+                list = findViewById(R.id.rangliste);
+
+                //Startet den Listener für alle buttons
+                doListen();
+
+                t.schedule(new TimerTask(){
+
+                    @Override
+                    public void run() {
+                        regattenAnzahlErmitteln();
+                    }
+
+                }, 0, 5000);
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                willkommenstextTV = findViewById(R.id.HEADERwillkommenstextTV);
+                willkommenstextTV.setText("Willkommen " + mAuth.getCurrentUser().getEmail());
+
+                logoutBTN = findViewById(R.id.HEADERlogoutBTN);
+                stegbelegungBTN = findViewById(R.id.STARTSEITEstegbelegungBTN);
+                verwaltungBTN = findViewById(R.id.STARTSEITEverwaltungBTN);
+                blauesbandBTN = findViewById(R.id.STARTSEITEblauesbandBTN);
+                regattaBTN = findViewById(R.id.STARTSEITEregattaBTN);
+                historieBTN = findViewById(R.id.HistorieBtn);
+                passwortÄndernBTN = findViewById(R.id.passwortÄndernBTN);
+                list = findViewById(R.id.rangliste);
+
+                //Startet den Listener für alle buttons
+                doListen();
+
+                t.schedule(new TimerTask(){
+
+                    @Override
+                    public void run() {
+                        regattenAnzahlErmitteln();
+                    }
+
+                }, 0, 5000);
+            }
+        });
 
     }
 
     public void onBackPressed(){
-        finish();
+        return;
     }
 
     //Hört ob knöpfe gedrückt wurden
@@ -89,13 +181,15 @@ public class Startseite extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        verwaltungBTN.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Startseite.this, TeilnehmerVerwaltung.class);
-                startActivity(intent);
-            }
-        });
+        if(regattaBTN != null) {
+            verwaltungBTN.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(Startseite.this, TeilnehmerVerwaltung.class);
+                    startActivity(intent);
+                }
+            });
+        }
         blauesbandBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -103,13 +197,16 @@ public class Startseite extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        regattaBTN.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Startseite.this, RegattaAuswahl.class);
-                startActivity(intent);
-            }
-        });
+        if(regattaBTN != null) {
+            regattaBTN.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(Startseite.this, RegattaAuswahl.class);
+                    finish();
+                    startActivity(intent);
+                }
+            });
+        }
         historieBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -135,6 +232,15 @@ public class Startseite extends AppCompatActivity {
 
 
     public void regattenAnzahlErmitteln(){
+        punkte.clear();
+        rang.clear();
+        name.clear();
+        allePunkte.clear();
+        einzelnePunkte.clear();
+        regatten = 0;
+        lauf = 0;
+        gesammtAnzahlLäufe = 0;
+        vorherigePunktzahl = 0;
         mDatabase.child("regatten").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -176,9 +282,7 @@ public class Startseite extends AppCompatActivity {
         final Map<String, String> useridListe = new HashMap<>();
         final Map<String, Integer> unsortMap = new HashMap<>();
 
-        final List<String> rang = new ArrayList<>();
-        final List<String> name = new ArrayList<>();
-        final List<String> punkte = new ArrayList<>();
+
         name.add("Teilnehmer");
         punkte.add("Punkte");
         rang.add("Rang");
@@ -231,7 +335,7 @@ public class Startseite extends AppCompatActivity {
                         list = new ArrayList<Double>();
                     }
                     Collections.sort(list);
-                    if(allePunkte.get(key) != regatten*gesammtAnzahlLäufe*99) {
+                    if(allePunkte.get(key) != gesammtAnzahlLäufe*99) {
                         if (gesammtAnzahlLäufe == 5) {
                             allePunkte.put(key, allePunkte.get(key) - list.get(list.size() - 1));
                         } else if (gesammtAnzahlLäufe == 7) {
@@ -246,7 +350,7 @@ public class Startseite extends AppCompatActivity {
 
                 int i = 1;
                 for (String key : sortedMap.keySet()) {
-                    if(sortedMap.get(key) != regatten*gesammtAnzahlLäufe*99) {
+                    if(sortedMap.get(key) != gesammtAnzahlLäufe*99) {
                         if(vorherigePunktzahl != sortedMap.get(key) && (vorherigePunktzahl != 0)) {
                             i++;
                         }
@@ -259,7 +363,6 @@ public class Startseite extends AppCompatActivity {
                         punkte.add(Double.toString(temp));
                     }
                 }
-                ListView list = findViewById(R.id.rangliste);
                 list.setAdapter(new MyListAdapterRang(Startseite.this, R.layout.rangliste_zeile, name, punkte, rang));
             }
 
@@ -322,7 +425,7 @@ class MyListAdapterRang extends ArrayAdapter<String> {
     @Override
     public View getView(final int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         ViewHolder mainViewHolder;
-        if(convertView == null){
+        //if(convertView == null){
             LayoutInflater inflater = LayoutInflater.from(getContext());
             convertView = inflater.inflate(layout, parent, false);
             final ViewHolderRang viewHolder = new ViewHolderRang();
@@ -338,11 +441,11 @@ class MyListAdapterRang extends ArrayAdapter<String> {
 
 
             convertView.setTag(viewHolder);
-        }
-        else{
-            mainViewHolder = (ViewHolder) convertView.getTag();
-            mainViewHolder.name.setText(getItem(position));
-        }
+        //}
+        //else{
+        //    mainViewHolder = (ViewHolder) convertView.getTag();
+         //   mainViewHolder.name.setText(getItem(position));
+        //}
 
         return convertView;
     }
