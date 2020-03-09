@@ -55,6 +55,7 @@ public class Regatta extends AppCompatActivity {
     Map<String, Double> alleUser = new HashMap<>();
     static HashMap<String, String> zeitTabelle = new HashMap<>();
     static HashMap<String, Boolean> userclickable = new HashMap<>();
+    static HashMap<String, List<String>> userLastTime = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -410,7 +411,7 @@ public class Regatta extends AppCompatActivity {
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 // for handling database error
-                Toast.makeText(Regatta.this, "Eventuel keine Teilnehmer vorhanden", Toast.LENGTH_LONG).show();
+                Toast.makeText(Regatta.this, "Eventuell keine Teilnehmer vorhanden", Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -498,7 +499,6 @@ public class Regatta extends AppCompatActivity {
             }
         });
     }
-
 }
 class MyListAdapter extends ArrayAdapter<String> {
 
@@ -525,8 +525,12 @@ class MyListAdapter extends ArrayAdapter<String> {
             viewHolder.name.setText(object.get(position));
             viewHolder.time = convertView.findViewById(R.id.regatta_timer);
 
-            viewHolder.btnClear = convertView.findViewById(R.id.regatta_btn_clear);
-            viewHolder.btnStop = convertView.findViewById(R.id.regatta_btn_stop);
+            viewHolder.btnRundeHinzufügen = convertView.findViewById(R.id.rundeHinzufügen);
+            viewHolder.btnRundeEntfernen = convertView.findViewById(R.id.rundeEntfernen);
+            viewHolder.rundeTV = convertView.findViewById(R.id.rundeTV);
+
+            viewHolder.btnClear = convertView.findViewById(R.id.btnClearTime);
+            viewHolder.btnStop = convertView.findViewById(R.id.btnTimeStop);
             viewHolder.id = useduserid.get(position);
             if(!Regatta.zeitTabelle.get(viewHolder.id).contains("00:00:00")){
                 viewHolder.time.setText(Regatta.zeitTabelle.get(viewHolder.id));
@@ -567,6 +571,7 @@ class MyListAdapter extends ArrayAdapter<String> {
                         }
                         String timestamp = secondString[2]+":"+secondString[1]+":"+ secondString[0];
                         viewHolder.time.setText(timestamp);
+
                         Regatta.zeitTabelle.put(viewHolder.id, timestamp);
                         viewHolder.editable = false;
                         Regatta.userclickable.put(viewHolder.id,false);
@@ -577,13 +582,31 @@ class MyListAdapter extends ArrayAdapter<String> {
                     }
                 }
             });
+            viewHolder.btnRundeHinzufügen.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    boolean test = Regatta.timerisrunning;
+                    if (test) {
+                        viewHolder.runde++;
+                        viewHolder.rundeTV.setText("Rnd: "+ viewHolder.runde);
+                    }
+                }
+            });
+            viewHolder.btnRundeEntfernen.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(viewHolder.runde > 1) {
+                        viewHolder.runde--;
+                        viewHolder.rundeTV.setText("Rnd: "+ viewHolder.runde);
+                    }
+                }
+            });
             viewHolder.btnClear.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    viewHolder.time.setText("00:00:00");
-                    Regatta.zeitTabelle.put(viewHolder.id,"00:00:00");
-                    viewHolder.editable = true;
-                    Regatta.userclickable.put(viewHolder.id,null);
+                        viewHolder.time.setText("00:00:00");
+                        viewHolder.editable = true;
+                        Regatta.userclickable.put(viewHolder.id, null);
                 }
             });
             convertView.setTag(viewHolder);
@@ -599,9 +622,9 @@ class MyListAdapter extends ArrayAdapter<String> {
 }
 class ViewHolder{
     Boolean editable = true;
-    TextView name;
-    TextView time;
-    Button btnStop;
-    Button btnClear;
+    TextView name, time, rundeTV;
+    Button btnStop, btnClear, btnRundeEntfernen, btnRundeHinzufügen;
     String id;
+    List<String> lastTime = new ArrayList<>();
+    int runde = 1;
 }

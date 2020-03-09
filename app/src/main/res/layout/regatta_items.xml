@@ -1,26 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/regatta_name"
-        android:layout_width="match_parent"
-        android:layout_height="49dp"
-        android:layout_marginEnd="0dp"
-        android:layout_marginRight="0dp"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginEnd="2dp"
         android:layout_toStartOf="@+id/regatta_timer"
-        android:layout_toLeftOf="@+id/regatta_timer"
-        android:gravity="center|left"
-        android:textSize="20sp" />
+        android:gravity="center_vertical"
+        android:text="teilnehmer"
+        android:textSize="20sp"
+        android:visibility="visible"
+        tools:visibility="visible" />
 
     <TextView
         android:id="@+id/regatta_timer"
-        android:layout_width="93dp"
-        android:layout_height="49dp"
+        android:layout_width="125dp"
+        android:layout_height="50dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:layout_marginEnd="0dp"
         android:layout_marginRight="0dp"
-        android:layout_toStartOf="@+id/regatta_btn_stop"
-        android:layout_toLeftOf="@+id/regatta_btn_stop"
         android:ems="10"
         android:gravity="center"
         android:inputType="time"
@@ -28,27 +35,70 @@
         android:textSize="20sp" />
 
     <Button
-        android:id="@+id/regatta_btn_stop"
-        android:layout_width="70dp"
-        android:layout_height="49dp"
-        android:layout_alignParentTop="true"
+        android:id="@+id/btnTimeStop"
+        android:layout_width="wrap_content"
+        android:layout_height="55dp"
+        android:layout_below="@+id/regatta_name"
         android:layout_marginTop="0dp"
-        android:layout_marginEnd="0dp"
+        android:layout_marginEnd="1dp"
         android:layout_marginRight="0dp"
-        android:layout_toStartOf="@+id/regatta_btn_clear"
-        android:layout_toLeftOf="@+id/regatta_btn_clear"
-        android:text="Stopp" />
+        android:layout_toStartOf="@+id/btnClearTime"
+        android:layout_toLeftOf="@+id/btnClearTime"
+        android:text="Zeit Stoppen" />
 
     <Button
-        android:id="@+id/regatta_btn_clear"
-        android:layout_width="49dp"
-        android:layout_height="49dp"
-        android:layout_alignParentTop="true"
+        android:id="@+id/btnClearTime"
+        android:layout_width="wrap_content"
+        android:layout_height="55dp"
+        android:layout_below="@+id/regatta_name"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_marginTop="0dp"
         android:layout_marginEnd="0dp"
         android:layout_marginRight="0dp"
-        android:text="x" />
+        android:gravity="center"
+        android:text="Zeit Löschen" />
+
+    <Button
+        android:id="@+id/rundeHinzufügen"
+        android:layout_width="30dp"
+        android:layout_height="55dp"
+        android:layout_below="@+id/regatta_name"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginRight="0dp"
+        android:layout_toStartOf="@+id/btnTimeStop"
+        android:layout_toLeftOf="@+id/btnTimeStop"
+        android:text="+" />
+
+    <Button
+        android:id="@+id/rundeEntfernen"
+        android:layout_width="30dp"
+        android:layout_height="55dp"
+        android:layout_below="@+id/regatta_name"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="-1dp"
+        android:layout_marginRight="0dp"
+        android:layout_toStartOf="@+id/rundeHinzufügen"
+        android:layout_toLeftOf="@+id/rundeHinzufügen"
+        android:text="-" />
+
+    <TextView
+        android:id="@+id/rundeTV"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_below="@+id/regatta_name"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginLeft="0dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginRight="0dp"
+        android:layout_toStartOf="@+id/rundeEntfernen"
+        android:layout_toLeftOf="@+id/rundeEntfernen"
+        android:gravity="center"
+        android:text="Rnd: 1"
+        android:textSize="20sp" />
 
 </RelativeLayout>

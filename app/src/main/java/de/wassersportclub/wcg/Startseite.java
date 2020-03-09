@@ -241,7 +241,8 @@ public class Startseite extends AppCompatActivity {
         lauf = 0;
         gesammtAnzahlLäufe = 0;
         vorherigePunktzahl = 0;
-        mDatabase.child("regatten").addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.child("regatten").addListenerForSingleValueEvent(new ValueEventListener()
+        {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 regatten = 0;
