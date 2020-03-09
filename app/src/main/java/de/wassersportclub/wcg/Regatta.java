@@ -625,7 +625,5 @@ class ViewHolder{
     TextView name, time, rundeTV;
     Button btnStop, btnClear, btnRundeEntfernen, btnRundeHinzufügen;
     String id;
-
-    List<String> lastTime = new ArrayList<>();
     int runde = 1;
 }
