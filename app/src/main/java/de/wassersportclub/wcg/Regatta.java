@@ -140,15 +140,69 @@ public class Regatta extends AppCompatActivity {
         btnRegattaFertig.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                zeitBerechnung();
+                rundenAnzahlBerechnung();
             }
         });
-
-
     }
 
-    private void zeitBerechnung() {
-        if(!zeitTabelle.isEmpty()){
+    public void rundenAnzahlBerechnung() {
+        if (!userLastTime.isEmpty()) {
+            int p = 0;
+            for (boolean e :checked){
+                if(e){
+                    p++;
+                }
+            }
+            if(p == userLastTime.size()) {
+                ArrayList<Integer> userRundenAnzahl = new ArrayList<>();
+                for (String e : userLastTime.keySet()) {
+                    int i = 0;
+                    for (String s : userLastTime.get(e)) {
+                        if (!s.equals("00:00:00")) {
+                            i++;
+                        }
+                    }
+                    if (i > 0) {
+                        userRundenAnzahl.add(i);
+                    }
+                }
+                Collections.sort(userRundenAnzahl);
+                displayConfirmView(userRundenAnzahl.get(0));
+            }else{
+                Toast.makeText(Regatta.this, "Du musst alle Teilnehmer stoppen!", Toast.LENGTH_LONG).show();
+            }
+        }else{
+            Toast.makeText(Regatta.this, "Du musst erst einen Teilnehmer stoppen!", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void displayConfirmView(final int runde){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(true);
+        builder.setTitle("Sicher?");
+        builder.setMessage("Die "+ runde +" Runde wird ausgewählt");
+
+        builder.setPositiveButton("Ja", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                zeitBerechnung(runde);
+
+            }
+        });
+        builder.setNegativeButton("Abbrechen", null);
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+
+    private void zeitBerechnung(int runde) {
+
+        for(String e : userLastTime.keySet()) {
+            zeitTabelle.put(e, userLastTime.get(e).get(runde-1));
+        }
 
             final Map<String, Integer> unsortMap = new HashMap<>();
 
@@ -271,7 +325,6 @@ public class Regatta extends AppCompatActivity {
                     });
                 }
             }
-        }
     }
 
 
@@ -517,6 +570,7 @@ class MyListAdapter extends ArrayAdapter<String> {
     @Override
     public View getView(final int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         ViewHolder mainViewHolder;
+
         if(convertView == null){
             LayoutInflater inflater = LayoutInflater.from(getContext());
             convertView = inflater.inflate(layout, parent, false);
@@ -528,13 +582,11 @@ class MyListAdapter extends ArrayAdapter<String> {
             viewHolder.btnRundeHinzufügen = convertView.findViewById(R.id.rundeHinzufügen);
             viewHolder.btnRundeEntfernen = convertView.findViewById(R.id.rundeEntfernen);
             viewHolder.rundeTV = convertView.findViewById(R.id.rundeTV);
+            viewHolder.lastTime.add(0, "00:00:00");
 
             viewHolder.btnClear = convertView.findViewById(R.id.btnClearTime);
             viewHolder.btnStop = convertView.findViewById(R.id.btnTimeStop);
             viewHolder.id = useduserid.get(position);
-            if(!Regatta.zeitTabelle.get(viewHolder.id).contains("00:00:00")){
-                viewHolder.time.setText(Regatta.zeitTabelle.get(viewHolder.id));
-            }
             if(Regatta.userclickable.get(viewHolder.id) != null) {
                 if (!Regatta.userclickable.get(viewHolder.id)) {
                     viewHolder.editable = false;
@@ -572,9 +624,10 @@ class MyListAdapter extends ArrayAdapter<String> {
                         String timestamp = secondString[2]+":"+secondString[1]+":"+ secondString[0];
                         viewHolder.time.setText(timestamp);
 
-                        Regatta.zeitTabelle.put(viewHolder.id, timestamp);
                         viewHolder.editable = false;
                         Regatta.userclickable.put(viewHolder.id,false);
+                        viewHolder.lastTime.set(viewHolder.runde - 1, timestamp);
+                        Regatta.userLastTime.put(viewHolder.id, viewHolder.lastTime);
                     }else if(!viewHolder.editable){
                         Toast.makeText(getContext(), "Teilnehmer wurde schon gestoppt", Toast.LENGTH_SHORT).show();
                     }else{
@@ -587,8 +640,20 @@ class MyListAdapter extends ArrayAdapter<String> {
                 public void onClick(View v) {
                     boolean test = Regatta.timerisrunning;
                     if (test) {
+                        if (!viewHolder.lastTime.get(viewHolder.runde - 1).equals("00:00:00")){
+                            if (viewHolder.zurückGedrückt == 0) {
+                                viewHolder.lastTime.add(viewHolder.runde, "00:00:00");
+                                viewHolder.editable = true;
+                            } else {
+                                viewHolder.zurückGedrückt--;
+                            }
                         viewHolder.runde++;
-                        viewHolder.rundeTV.setText("Rnd: "+ viewHolder.runde);
+                        viewHolder.rundeTV.setText("Rnd: " + viewHolder.runde);
+                        viewHolder.time.setText(viewHolder.lastTime.get(viewHolder.runde -1));
+
+                        }else{
+                            Toast.makeText(getContext(), "Du musst zuerst die Zeit Stoppen", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 }
             });
@@ -597,19 +662,37 @@ class MyListAdapter extends ArrayAdapter<String> {
                 public void onClick(View v) {
                     if(viewHolder.runde > 1) {
                         viewHolder.runde--;
+                        viewHolder.zurückGedrückt++;
                         viewHolder.rundeTV.setText("Rnd: "+ viewHolder.runde);
+                        viewHolder.editable = false;
+                        viewHolder.time.setText(viewHolder.lastTime.get(viewHolder.runde -1));
+
                     }
                 }
             });
             viewHolder.btnClear.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if (viewHolder.zurückGedrückt == 0 || viewHolder.runde == 1) {
                         viewHolder.time.setText("00:00:00");
                         viewHolder.editable = true;
                         Regatta.userclickable.put(viewHolder.id, null);
+                        viewHolder.lastTime.set(viewHolder.runde - 1, "00:00:00");
+                        Regatta.userLastTime.put(viewHolder.id, viewHolder.lastTime);
+                    }
+                    if(viewHolder.runde == 1){
+                        viewHolder.lastTime.clear();
+                        viewHolder.lastTime.add(0, "00:00:00");
+                        Regatta.userLastTime.put(viewHolder.id, viewHolder.lastTime);
+                        viewHolder.zurückGedrückt = 0;
+                    }
+
+
                 }
             });
             convertView.setTag(viewHolder);
+            System.out.println("test "+convertView.getTag().toString());
+            System.out.println("test "+convertView.getTag().toString());
         }
         else{
             mainViewHolder = (ViewHolder) convertView.getTag();
@@ -625,5 +708,14 @@ class ViewHolder{
     TextView name, time, rundeTV;
     Button btnStop, btnClear, btnRundeEntfernen, btnRundeHinzufügen;
     String id;
+    List<String> lastTime = new ArrayList<>();
     int runde = 1;
+    int zurückGedrückt = 0;
+}
+class Hilfsholder{
+    Boolean editable = true;
+    String id;
+    List<String> lastTime = new ArrayList<>();
+    int runde = 1;
+    int zurückGedrückt = 0;
 }

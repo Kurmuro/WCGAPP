@@ -352,7 +352,7 @@ public class Startseite extends AppCompatActivity {
                 int i = 1;
                 for (String key : sortedMap.keySet()) {
                     if(sortedMap.get(key) != gesammtAnzahlLäufe*99) {
-                        if(vorherigePunktzahl != sortedMap.get(key) && (vorherigePunktzahl != 0)) {
+                        if(vorherigePunktzahl != sortedMap.get(key)){// && (vorherigePunktzahl != 0)) { falls fehler mit gleichem rang
                             i++;
                         }
                         vorherigePunktzahl = sortedMap.get(key);
