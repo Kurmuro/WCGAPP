@@ -575,59 +575,78 @@ class MyListAdapter extends ArrayAdapter<String> {
             LayoutInflater inflater = LayoutInflater.from(getContext());
             convertView = inflater.inflate(layout, parent, false);
             final ViewHolder viewHolder = new ViewHolder();
-            viewHolder.name = convertView.findViewById(R.id.regatta_name);
-            viewHolder.name.setText(object.get(position));
-            viewHolder.time = convertView.findViewById(R.id.regatta_timer);
 
+            //initalisieren
+            viewHolder.name = convertView.findViewById(R.id.regatta_name);
+            viewHolder.time = convertView.findViewById(R.id.regatta_timer);
             viewHolder.btnRundeHinzufügen = convertView.findViewById(R.id.rundeHinzufügen);
             viewHolder.btnRundeEntfernen = convertView.findViewById(R.id.rundeEntfernen);
             viewHolder.rundeTV = convertView.findViewById(R.id.rundeTV);
-            viewHolder.lastTime.add(0, "00:00:00");
-
             viewHolder.btnClear = convertView.findViewById(R.id.btnClearTime);
             viewHolder.btnStop = convertView.findViewById(R.id.btnTimeStop);
+
+            //ID und Name des Spielers eintragen
             viewHolder.id = useduserid.get(position);
+            viewHolder.name.setText(object.get(position));
+
+            //Jeder Spieler der teilnimmt bekommt die Zeit von Runde eins auf null gesetzt
+            viewHolder.lastTime.add(0, "00:00:00");
+
+            //Wenn der Spieler in der Map existiert:
+            // HashMap<String, Boolean> userclickable = new HashMap<>();
             if(Regatta.userclickable.get(viewHolder.id) != null) {
+                //Wenn der Spieler schon gestoppt wurde trage es im Viewholder ein
                 if (!Regatta.userclickable.get(viewHolder.id)) {
                     viewHolder.editable = false;
                 }
             }
+
+            //String Array für die Zeit
             final String[] secondString = new String[3];
+            //Zeitberechnung wenn der Spieler gestoppt wurde
             viewHolder.btnStop.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    boolean test = Regatta.timerisrunning;
-                    if(test && viewHolder.editable) {
+                    //Wenn die Zeit gestartet wurde und der Benutzer nicht schon gestoppt wurde
+                    if(Regatta.timerisrunning && viewHolder.editable) {
                         Toast.makeText(getContext(), "Teilnehmer " + object.get(position) + " im Ziel", Toast.LENGTH_SHORT).show();
+
+                        //die Sekunden werden umgerechnet im Stunden, Minuten und Sekunden
                         final long longseconds = (System.currentTimeMillis() - Regatta.start)/1000;
                         final int a = (int)longseconds;
                         final int stunden = a / 3600;
                         final int minuten = (a % 3600) / 60;
                         final Integer sekunden = (a % 3600) % 60;
 
-
                         secondString[0] = Integer.toString(sekunden);
                         if(sekunden <=9) {
                             secondString[0] = "0" + sekunden;
-
                         }
+
                         secondString[1] = Integer.toString(minuten);
                         if(minuten <=9) {
                             secondString[1] = "0" + minuten;
-
                         }
+
                         secondString[2] = Integer.toString(stunden);
                         if(stunden <=9) {
                             secondString[2] = "0" + stunden;
-
                         }
+
+                        //Umgerechnete Zeit
                         String timestamp = secondString[2]+":"+secondString[1]+":"+ secondString[0];
+
+                        //Gestoppte Zeit wird dem Benutzer angezeigt
                         viewHolder.time.setText(timestamp);
 
+                        //Benutzer soll nicht versehendelich mehrfach Gestoppt werden können
                         viewHolder.editable = false;
                         Regatta.userclickable.put(viewHolder.id,false);
+
+                        //Speichere die Zeit
                         viewHolder.lastTime.set(viewHolder.runde - 1, timestamp);
                         Regatta.userLastTime.put(viewHolder.id, viewHolder.lastTime);
+
                     }else if(!viewHolder.editable){
                         Toast.makeText(getContext(), "Teilnehmer wurde schon gestoppt", Toast.LENGTH_SHORT).show();
                     }else{
@@ -635,18 +654,27 @@ class MyListAdapter extends ArrayAdapter<String> {
                     }
                 }
             });
+
+            //Neue Runde hinzufügen
             viewHolder.btnRundeHinzufügen.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    boolean test = Regatta.timerisrunning;
-                    if (test) {
+                    //wenn die Zeit gestartet wurde
+                    if (Regatta.timerisrunning) {
+                        //abfrage ob die momentane Runde schon gestoppt worden ist
                         if (!viewHolder.lastTime.get(viewHolder.runde - 1).equals("00:00:00")){
+
+                            //wenn das die letzte runde war füge eine neue runde hinzu mit dem wert null
                             if (viewHolder.zurückGedrückt == 0) {
                                 viewHolder.lastTime.add(viewHolder.runde, "00:00:00");
                                 viewHolder.editable = true;
+
+                                //falls das nicht die letzte runde war
                             } else {
                                 viewHolder.zurückGedrückt--;
                             }
+
+                        //ändere die angezeigte runde und zeige den wert der "neuen" runde an
                         viewHolder.runde++;
                         viewHolder.rundeTV.setText("Rnd: " + viewHolder.runde);
                         viewHolder.time.setText(viewHolder.lastTime.get(viewHolder.runde -1));
@@ -657,42 +685,50 @@ class MyListAdapter extends ArrayAdapter<String> {
                     }
                 }
             });
+
+            //Gehe zur vorherigen runde
             viewHolder.btnRundeEntfernen.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    //Es dürfen keine negativen runden möglich sein
                     if(viewHolder.runde > 1) {
+                        //zeige die vorherige runde an, spieler darf nicht editierbar sein
                         viewHolder.runde--;
-                        viewHolder.zurückGedrückt++;
                         viewHolder.rundeTV.setText("Rnd: "+ viewHolder.runde);
+                        viewHolder.zurückGedrückt++;
                         viewHolder.editable = false;
                         viewHolder.time.setText(viewHolder.lastTime.get(viewHolder.runde -1));
 
                     }
                 }
             });
+
+            //Lösche die Genommene Zeit
             viewHolder.btnClear.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    //darf nur in der ersten oder letzten runde gelöscht werden. (alles löschen oder nur die letzte runde)
                     if (viewHolder.zurückGedrückt == 0 || viewHolder.runde == 1) {
+
                         viewHolder.time.setText("00:00:00");
                         viewHolder.editable = true;
                         Regatta.userclickable.put(viewHolder.id, null);
                         viewHolder.lastTime.set(viewHolder.runde - 1, "00:00:00");
                         Regatta.userLastTime.put(viewHolder.id, viewHolder.lastTime);
+
                     }
+                    //wenn es die erste runde ist, werden die anderen runden auch gelöscht.
                     if(viewHolder.runde == 1){
+
                         viewHolder.lastTime.clear();
                         viewHolder.lastTime.add(0, "00:00:00");
                         Regatta.userLastTime.put(viewHolder.id, viewHolder.lastTime);
                         viewHolder.zurückGedrückt = 0;
+
                     }
-
-
                 }
             });
             convertView.setTag(viewHolder);
-            System.out.println("test "+convertView.getTag().toString());
-            System.out.println("test "+convertView.getTag().toString());
         }
         else{
             mainViewHolder = (ViewHolder) convertView.getTag();
@@ -704,18 +740,17 @@ class MyListAdapter extends ArrayAdapter<String> {
 
 }
 class ViewHolder{
-    Boolean editable = true;
     TextView name, time, rundeTV;
     Button btnStop, btnClear, btnRundeEntfernen, btnRundeHinzufügen;
-    String id;
-    List<String> lastTime = new ArrayList<>();
-    int runde = 1;
-    int zurückGedrückt = 0;
-}
-class Hilfsholder{
+
+    //Ist der Spieler editierbar (Wurde die Zeit schon für den Spieler gestoppt?)
     Boolean editable = true;
+    //ID des Spielers
     String id;
+    //Die gespeicherten Runden Zeiten
     List<String> lastTime = new ArrayList<>();
+    //die momentan angezeigte Runde
     int runde = 1;
+    //Wie oft wurde zurückgedrückt (welche Runde wird momentan angezeigt)
     int zurückGedrückt = 0;
 }
