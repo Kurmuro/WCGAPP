@@ -55,6 +55,11 @@ public class Regatta extends AppCompatActivity {
     Map<String, Double> alleUser = new HashMap<>();
     static HashMap<String, String> zeitTabelle = new HashMap<>();
     static HashMap<String, Boolean> userclickable = new HashMap<>();
+
+
+    static HashMap<String, Integer> runde = new HashMap<>();
+    static HashMap<String, Integer> zurückgedrückt = new HashMap<>();
+    static HashMap<String, Boolean> isUserEditable = new HashMap<>();
     static HashMap<String, List<String>> userLastTime = new HashMap<>();
 
     @Override
@@ -181,14 +186,12 @@ public class Regatta extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setCancelable(true);
         builder.setTitle("Sicher?");
-        builder.setMessage("Die "+ runde +" Runde wird ausgewählt");
+        builder.setMessage("Die "+ runde +" Runde wird ausgewählt.\n\nDer Übertragungsvorgang kann ein paar Sekunden in Anspruch nehmen. Bitte habe etwas geduld!");
 
         builder.setPositiveButton("Ja", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
                 zeitBerechnung(runde);
-
             }
         });
         builder.setNegativeButton("Abbrechen", null);
@@ -266,18 +269,13 @@ public class Regatta extends AppCompatActivity {
                                     }
                                 }
 
-
-
-
-
-
-
-
                                 //bei neue Regatta
                                 if(auswahl.equals("Neue Regatta")){
                                     for (String key : alleUser.keySet()) {
+                                        try{
+                                            Thread.sleep(1000);
+                                        }catch(InterruptedException e){}
                                         mDatabase.child("regatten").child(Integer.toString(regatten+1)).child("1").child(key).setValue(alleUser.get(key));
-                                        Toast.makeText(Regatta.this, "Erfolgreich gespeichert!", Toast.LENGTH_LONG).show();
                                     }
                                     regattaAbbrechen();
                                 }
@@ -295,8 +293,10 @@ public class Regatta extends AppCompatActivity {
                                                 lauf++;
                                             }
                                             for (String key : alleUser.keySet()) {
+                                                try{
+                                                    Thread.sleep(600);
+                                                }catch(InterruptedException e){}
                                                 mDatabase.child("regatten").child(Integer.toString(regatten)).child(Integer.toString(lauf+1)).child(key).setValue(alleUser.get(key));
-                                                Toast.makeText(Regatta.this, "Erfolgreich gespeichert!", Toast.LENGTH_LONG).show();
                                             }
                                             regattaAbbrechen();
                                         }
@@ -543,6 +543,7 @@ public class Regatta extends AppCompatActivity {
 
                 ListView list = findViewById(R.id.auswahlliste);
                 list.setAdapter(new MyListAdapter(Regatta.this, R.layout.regatta_items, users, usersid));
+
             }
 
 
@@ -589,15 +590,32 @@ class MyListAdapter extends ArrayAdapter<String> {
             viewHolder.id = useduserid.get(position);
             viewHolder.name.setText(object.get(position));
 
-            //Jeder Spieler der teilnimmt bekommt die Zeit von Runde eins auf null gesetzt
-            viewHolder.lastTime.add(0, "00:00:00");
+            /*static HashMap<String, Integer> runde = new HashMap<>();
+            static HashMap<String, Integer> zurückgedrückt = new HashMap<>();
+            static HashMap<String, Boolean> isUserClickable = new HashMap<>();
+            static HashMap<String, List<String>> userLastTime = new HashMap<>();
 
-            //Wenn der Spieler in der Map existiert:
-            // HashMap<String, Boolean> userclickable = new HashMap<>();
-            if(Regatta.userclickable.get(viewHolder.id) != null) {
-                //Wenn der Spieler schon gestoppt wurde trage es im Viewholder ein
-                if (!Regatta.userclickable.get(viewHolder.id)) {
-                    viewHolder.editable = false;
+             */
+            if(Regatta.userLastTime.containsKey(viewHolder.id)){
+                viewHolder.runde = Regatta.runde.get(viewHolder.id);
+                viewHolder.zurückGedrückt = Regatta.zurückgedrückt.get(viewHolder.id);
+                viewHolder.editable = Regatta.isUserEditable.get(viewHolder.id);
+                viewHolder.lastTime = Regatta.userLastTime.get(viewHolder.id);
+                viewHolder.time.setText(viewHolder.lastTime.get(viewHolder.runde-1));
+                viewHolder.rundeTV.setText("Rnd: "+ viewHolder.runde);
+            }else {
+
+                //Jeder Spieler der teilnimmt bekommt die Zeit von Runde eins auf null gesetzt
+                viewHolder.lastTime.add(0, "00:00:00");
+
+                //Wenn der Spieler in der Map existiert:
+                // HashMap<String, Boolean> userclickable = new HashMap<>();
+                if (Regatta.userclickable.get(viewHolder.id) != null) {
+                    //Wenn der Spieler schon gestoppt wurde trage es im Viewholder ein
+                    if (!Regatta.userclickable.get(viewHolder.id)) {
+                        viewHolder.editable = false;
+                        viewHolder.übertrageDaten();
+                    }
                 }
             }
 
@@ -645,7 +663,8 @@ class MyListAdapter extends ArrayAdapter<String> {
 
                         //Speichere die Zeit
                         viewHolder.lastTime.set(viewHolder.runde - 1, timestamp);
-                        Regatta.userLastTime.put(viewHolder.id, viewHolder.lastTime);
+                        //Regatta.userLastTime.put(viewHolder.id, viewHolder.lastTime);
+                        viewHolder.übertrageDaten();
 
                     }else if(!viewHolder.editable){
                         Toast.makeText(getContext(), "Teilnehmer wurde schon gestoppt", Toast.LENGTH_SHORT).show();
@@ -678,6 +697,7 @@ class MyListAdapter extends ArrayAdapter<String> {
                         viewHolder.runde++;
                         viewHolder.rundeTV.setText("Rnd: " + viewHolder.runde);
                         viewHolder.time.setText(viewHolder.lastTime.get(viewHolder.runde -1));
+                        viewHolder.übertrageDaten();
 
                         }else{
                             Toast.makeText(getContext(), "Du musst zuerst die Zeit Stoppen", Toast.LENGTH_SHORT).show();
@@ -698,6 +718,7 @@ class MyListAdapter extends ArrayAdapter<String> {
                         viewHolder.zurückGedrückt++;
                         viewHolder.editable = false;
                         viewHolder.time.setText(viewHolder.lastTime.get(viewHolder.runde -1));
+                        viewHolder.übertrageDaten();
 
                     }
                 }
@@ -712,9 +733,10 @@ class MyListAdapter extends ArrayAdapter<String> {
 
                         viewHolder.time.setText("00:00:00");
                         viewHolder.editable = true;
-                        Regatta.userclickable.put(viewHolder.id, null);
+                        //Regatta.userclickable.put(viewHolder.id, null);
                         viewHolder.lastTime.set(viewHolder.runde - 1, "00:00:00");
                         Regatta.userLastTime.put(viewHolder.id, viewHolder.lastTime);
+                        viewHolder.übertrageDaten();
 
                     }
                     //wenn es die erste runde ist, werden die anderen runden auch gelöscht.
@@ -722,8 +744,9 @@ class MyListAdapter extends ArrayAdapter<String> {
 
                         viewHolder.lastTime.clear();
                         viewHolder.lastTime.add(0, "00:00:00");
-                        Regatta.userLastTime.put(viewHolder.id, viewHolder.lastTime);
+                        //Regatta.userLastTime.put(viewHolder.id, viewHolder.lastTime);
                         viewHolder.zurückGedrückt = 0;
+                        viewHolder.übertrageDaten();
 
                     }
                 }
@@ -753,4 +776,11 @@ class ViewHolder{
     int runde = 1;
     //Wie oft wurde zurückgedrückt (welche Runde wird momentan angezeigt)
     int zurückGedrückt = 0;
+
+    public void übertrageDaten(){
+        Regatta.isUserEditable.put(id, editable);
+        Regatta.runde.put(id, runde);
+        Regatta.zurückgedrückt.put(id, zurückGedrückt);
+        Regatta.userLastTime.put(id, lastTime);
+    }
 }
