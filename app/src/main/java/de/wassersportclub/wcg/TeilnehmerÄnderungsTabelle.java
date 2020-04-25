@@ -56,6 +56,7 @@ public class TeilnehmerÄnderungsTabelle extends AppCompatActivity {
                 nachnameView.setText(dataSnapshot.child("Nachname").getValue().toString());
                 bootstypView.setText(dataSnapshot.child("Bootstyp").getValue().toString());
                 yardstickView.setText(dataSnapshot.child("Yardstick").getValue().toString());
+                finishBTN.setText("Änderungen Speichern");
 
             }
 

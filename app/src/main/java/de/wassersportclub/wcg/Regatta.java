@@ -272,9 +272,6 @@ public class Regatta extends AppCompatActivity {
                                 //bei neue Regatta
                                 if(auswahl.equals("Neue Regatta")){
                                     for (String key : alleUser.keySet()) {
-                                        try{
-                                            Thread.sleep(1000);
-                                        }catch(InterruptedException e){}
                                         mDatabase.child("regatten").child(Integer.toString(regatten+1)).child("1").child(key).setValue(alleUser.get(key));
                                     }
                                     regattaAbbrechen();
@@ -293,9 +290,6 @@ public class Regatta extends AppCompatActivity {
                                                 lauf++;
                                             }
                                             for (String key : alleUser.keySet()) {
-                                                try{
-                                                    Thread.sleep(600);
-                                                }catch(InterruptedException e){}
                                                 mDatabase.child("regatten").child(Integer.toString(regatten)).child(Integer.toString(lauf+1)).child(key).setValue(alleUser.get(key));
                                             }
                                             regattaAbbrechen();
@@ -305,18 +299,7 @@ public class Regatta extends AppCompatActivity {
                                         }
                                     });
                                 }
-
-
-
-
-
-
-
                             }
-
-
-
-
                         }
 
                         @Override
@@ -415,13 +398,6 @@ public class Regatta extends AppCompatActivity {
                 regattaAbbrechen();
             }
         }
-
-
-
-
-
-
-
 
 
     //Liste erstellen mit allen Auswählbaren Benutzern
