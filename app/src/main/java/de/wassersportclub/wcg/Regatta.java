@@ -53,6 +53,7 @@ public class Regatta extends AppCompatActivity {
     DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
     Map<String, Double> alleUser = new HashMap<>();
+    Map<String, Integer> yardStick = new HashMap<>();
     static HashMap<String, String> zeitTabelle = new HashMap<>();
     static HashMap<String, Boolean> userclickable = new HashMap<>();
 
@@ -85,9 +86,9 @@ public class Regatta extends AppCompatActivity {
                 while (dataSnapshots.hasNext()) {
                     DataSnapshot dataSnapshotChild = dataSnapshots.next();
                     alleUser.put(dataSnapshotChild.getKey(), 99.);
+                    yardStick.put(dataSnapshotChild.getKey(), Integer.parseInt(dataSnapshotChild.child("Yardstick").getValue().toString()));
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
@@ -219,11 +220,6 @@ public class Regatta extends AppCompatActivity {
             for(final Map.Entry e : zeitTabelle.entrySet()){
                 if(!e.getValue().toString().equals("00:00:00")) {
 
-                    //mit dem yardstick berechnen
-                    mDatabase.child("users").child(e.getKey().toString()).addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            int yardstickDb = Integer.parseInt(dataSnapshot.child("Yardstick").getValue().toString());
 
                             int zeitInSekunden;
                             int berechneteYardstickzeit;
@@ -233,7 +229,7 @@ public class Regatta extends AppCompatActivity {
                             zeitInSekunden = Integer.parseInt(split[2]);
                             zeitInSekunden += Integer.parseInt(split[1])*60;
                             zeitInSekunden += Integer.parseInt(split[0])*60*60;
-                            berechneteYardstickzeit = (zeitInSekunden*100)/yardstickDb;
+                            berechneteYardstickzeit = (zeitInSekunden*100)/yardStick.get(e.getKey());
                             berechnungsZähler++;
                             unsortMap.put(e.getKey().toString(),berechneteYardstickzeit);//hilfe
 
@@ -300,12 +296,6 @@ public class Regatta extends AppCompatActivity {
                                     });
                                 }
                             }
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-                        }
-                    });
                 }
             }
     }
