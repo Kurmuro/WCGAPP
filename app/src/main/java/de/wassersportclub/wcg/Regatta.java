@@ -271,7 +271,7 @@ public class Regatta extends AppCompatActivity {
                                         mDatabase.child("regatten").child(Integer.toString(regatten+1)).child("1").child(key).setValue(alleUser.get(key));
                                         System.out.println("Test"+ alleUser.get(key));
                                     }
-                                    //regattaAbbrechen();
+                                    regattaAbbrechen();
                                 }
 
 
