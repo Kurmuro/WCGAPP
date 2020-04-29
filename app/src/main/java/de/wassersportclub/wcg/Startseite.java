@@ -44,7 +44,7 @@ public class Startseite extends AppCompatActivity {
     int regatten;
     int lauf;
     int gesammtAnzahlLäufe = 0;
-    double vorherigePunktzahl = 0;
+    double vorherigePunktzahl = -1;
     ListView list;
     Timer t = new Timer();
     HashMap<String, Double> allePunkte = new HashMap<>();
@@ -349,13 +349,26 @@ public class Startseite extends AppCompatActivity {
 
                 Map<String, Double> sortedMap = sortByValue(allePunkte);
 
+                boolean firsttime = true;
                 int i = 1;
                 for (String key : sortedMap.keySet()) {
-                    if(sortedMap.get(key) != gesammtAnzahlLäufe*99) {
-                        if(vorherigePunktzahl != sortedMap.get(key) && (vorherigePunktzahl != 0)) { //falls fehler mit gleichem rang
-                            i++;
+                    if (firsttime == false) {
+                        if (sortedMap.get(key) != gesammtAnzahlLäufe * 99) {
+                            if (vorherigePunktzahl != sortedMap.get(key) && (vorherigePunktzahl != -1)) { //falls fehler mit gleichem rang
+                                i++;
+                            }
+                            vorherigePunktzahl = sortedMap.get(key);
+                            System.out.println("test" + vorherigePunktzahl);
+                            rang.add(Integer.toString(i));
+                            name.add(useridListe.get(key));
+                            double temp = sortedMap.get(key) * 100;
+                            temp = Math.round(temp);
+                            temp = temp / 100;
+                            punkte.add(Double.toString(temp));
                         }
+                    } else {
                         vorherigePunktzahl = sortedMap.get(key);
+                        firsttime = false;
                         rang.add(Integer.toString(i));
                         name.add(useridListe.get(key));
                         double temp = sortedMap.get(key) * 100;

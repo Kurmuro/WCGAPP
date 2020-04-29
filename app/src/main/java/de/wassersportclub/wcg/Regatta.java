@@ -2,6 +2,7 @@ package de.wassersportclub.wcg;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,6 +49,7 @@ public class Regatta extends AppCompatActivity {
     int regatten = 0;
     int lauf = 0;
     int auswahlAnzahl = 0;
+    ListView list;
 
     String auswahl = "Auswahl";
     DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -75,9 +77,11 @@ public class Regatta extends AppCompatActivity {
         btnTeilnehmerAuswaehlen = findViewById(R.id.btnTeilnehmerAuswählen);
         btnRegattaFertig = findViewById(R.id.btnRegattaFertig);
         berechnungsZähler = 0;
+        list = findViewById(R.id.auswahlliste);
 
         auswahl = getIntent().getStringExtra("auswahl");
         auswahlview.setText(auswahl);
+
 
         mDatabase.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -115,12 +119,54 @@ public class Regatta extends AppCompatActivity {
     }
 
     public void regattaAbbrechen() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(true);
+        builder.setTitle("Sicher?");
+        builder.setMessage("Die bisherigen gespeicherten Daten gehen dabei verloren!");
+
+        builder.setPositiveButton("Ja", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                stoppuhr.cancel();
+                checked = null;
+                timerisrunning = false;
+                zeitTabelle.clear();
+                Regatta.this.finish();
+                System.exit(0);
+            }
+        });
+        builder.setNegativeButton("Abbrechen", null);
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+    }
+
+    public void regattaBeendet() {
+        Toast.makeText(Regatta.this, "Speichern OK!", Toast.LENGTH_LONG).show();
         stoppuhr.cancel();
         checked = null;
         timerisrunning = false;
         zeitTabelle.clear();
-        finish();
-        System.exit(0);
+        TimerExit te = new TimerExit();
+        te.execute();
+    }
+    public class TimerExit extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                Thread.sleep(2000); // 1000 = eine sek.
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            Regatta.this.finish();
+            System.exit(0);
+        }
     }
 
 
@@ -269,9 +315,8 @@ public class Regatta extends AppCompatActivity {
                                 if(auswahl.equals("Neue Regatta")){
                                     for (String key : alleUser.keySet()) {
                                         mDatabase.child("regatten").child(Integer.toString(regatten+1)).child("1").child(key).setValue(alleUser.get(key));
-                                        System.out.println("Test"+ alleUser.get(key));
                                     }
-                                    regattaAbbrechen();
+                                    regattaBeendet();
                                 }
 
 
@@ -289,7 +334,7 @@ public class Regatta extends AppCompatActivity {
                                             for (String key : alleUser.keySet()) {
                                                 mDatabase.child("regatten").child(Integer.toString(regatten)).child(Integer.toString(lauf+1)).child(key).setValue(alleUser.get(key));
                                             }
-                                            regattaAbbrechen();
+                                            regattaBeendet();
                                         }
                                         @Override
                                         public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -508,9 +553,7 @@ public class Regatta extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 //Wenn auf Datenbank zugegriffen werden kann:
 
-                ListView list = findViewById(R.id.auswahlliste);
                 list.setAdapter(new MyListAdapter(Regatta.this, R.layout.regatta_items, users, usersid));
-
             }
 
 
