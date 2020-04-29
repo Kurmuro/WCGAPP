@@ -2,6 +2,8 @@ package de.wassersportclub.wcg;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -53,6 +55,7 @@ public class Regatta extends AppCompatActivity {
 
     String auswahl = "Auswahl";
     DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+    DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
 
     Map<String, Double> alleUser = new HashMap<>();
     Map<String, Integer> yardStick = new HashMap<>();
@@ -228,6 +231,31 @@ public class Regatta extends AppCompatActivity {
         }
     }
 
+
+    private boolean Connection() {
+        boolean Wifi = false;
+        boolean Mobile = false;
+
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo[] netInfo = cm.getAllNetworkInfo();
+        for (NetworkInfo NI : netInfo) {
+            if (NI.getTypeName().equalsIgnoreCase("WIFI")){
+                if (NI.isConnected()){
+                    Wifi = true;
+                }
+            }
+            if (NI.getTypeName().equalsIgnoreCase("MOBILE"))
+                if (NI.isConnected()){
+                    Mobile = true;
+                }
+        }
+        return Wifi || Mobile;
+    }
+
+
+
+
+
     public void displayConfirmView(final int runde){
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -238,7 +266,26 @@ public class Regatta extends AppCompatActivity {
         builder.setPositiveButton("Ja", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                zeitBerechnung(runde);
+                if(Connection()) {
+
+                    connectedRef.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            boolean connected = snapshot.getValue(Boolean.class);
+                            if (connected) {
+                                zeitBerechnung(runde);
+                            } else {
+                                Toast.makeText(Regatta.this, "Keine Verbindung zur Datenbank. Probiere es erneut", Toast.LENGTH_LONG).show();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                        }
+                    });
+                }else{
+                    Toast.makeText(Regatta.this, "Prüfe deine Internet verbindung", Toast.LENGTH_LONG).show();
+                }
             }
         });
         builder.setNegativeButton("Abbrechen", null);

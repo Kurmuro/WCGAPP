@@ -38,13 +38,13 @@ public class Historie extends AppCompatActivity {
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     int regatten;
-    int lauf;
-    int aktuellerLäufe = 1;
+    int aktuelleRegatta = 1;
+    int LäufeAktuellerRegatta = 1;
     int gesammtAnzahlLäufe = 0;
     double vorherigePunktzahl = 0;
 
-    HashMap<String, Double> allePunkte = new HashMap<>();
-    HashMap<String, List<Double>> einzelnePunkte= new HashMap<>();
+    Map<String, String> useridListe = new HashMap<>();
+    HashMap<String, Double> Punkte = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,17 +95,18 @@ public class Historie extends AppCompatActivity {
                     builder.setTitle("Regatten");
                     builder.setItems(regattaListe, new DialogInterface.OnClickListener() {
                                 @Override
-                                public void onClick(DialogInterface dialog, int which) {
+                                public void onClick(DialogInterface dialog, final int which) {
                                     regattaBTN.setText("Regatta: " + (which + 1));
+                                    aktuelleRegatta = which + 1;
                                     laufBTN.setText("Lauf: 1");
                                     mDatabase.child("regatten").addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                            aktuellerLäufe = 0;
-                                            Iterator<DataSnapshot> dataSnapshots = dataSnapshot.child(Integer.toString(hilfsvariable)).getChildren().iterator();
+                                            LäufeAktuellerRegatta = 0;
+                                            Iterator<DataSnapshot> dataSnapshots = dataSnapshot.child(Integer.toString(which + 1)).getChildren().iterator();
                                             while (dataSnapshots.hasNext()) {
                                                 DataSnapshot dataSnapshotChild = dataSnapshots.next();
-                                                aktuellerLäufe++;
+                                                LäufeAktuellerRegatta++;
                                             }
                                         }
 
@@ -114,6 +115,7 @@ public class Historie extends AppCompatActivity {
 
                                         }
                                     });
+                                    ranglisteErstellen(which + 1, 1);
                                 }
                             });
                     AlertDialog dialog = builder.create();
@@ -124,8 +126,8 @@ public class Historie extends AppCompatActivity {
         laufBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String[] laufListe = new String[aktuellerLäufe];
-                for (int i = 1; i <= aktuellerLäufe; i++) {
+                String[] laufListe = new String[LäufeAktuellerRegatta];
+                for (int i = 1; i <= LäufeAktuellerRegatta; i++) {
                     laufListe[i-1] = "Lauf: "+i;
                 }
                 AlertDialog.Builder builder = new AlertDialog.Builder(Historie.this);
@@ -135,6 +137,7 @@ public class Historie extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         laufBTN.setText("Lauf: " + (which + 1));
+                        ranglisteErstellen(aktuelleRegatta, which + 1);
                     }
                 });
                 AlertDialog dialog = builder.create();
@@ -150,10 +153,15 @@ public class Historie extends AppCompatActivity {
         startActivity(intent);
     }
 
+    //regattenanzahl und läufe der ersten regatta ermitteln
     public void regattenAnzahlErmitteln(){
+
+
         mDatabase.child("regatten").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                //regattenanzahl ermitteln
                 regatten = 0;
                 Iterator<DataSnapshot> dataSnapshots = dataSnapshot.getChildren().iterator();
                 while (dataSnapshots.hasNext()) {
@@ -161,8 +169,17 @@ public class Historie extends AppCompatActivity {
                     regatten++
                     ;
                 }
-                if(regatten != 0){
-                    ranglisteErstellen(regatten);
+
+                if(regatten != 0) {
+                    LäufeAktuellerRegatta = 0;
+                    Iterator<DataSnapshot> dataSnapshots2 = dataSnapshot.child("1").getChildren().iterator();
+                    while (dataSnapshots2.hasNext()) {
+                        DataSnapshot dataSnapshotChild = dataSnapshots2.next();
+                        LäufeAktuellerRegatta++;
+                    }
+
+                    ranglisteErstellen(1, 1);
+
                 }
             }
 
@@ -171,33 +188,7 @@ public class Historie extends AppCompatActivity {
 
             }
         });
-    }
-
-    public List<Double> get(String key) {
-        return einzelnePunkte.get(key);
-    }
-
-    public void put(String key, Double value) {
-        List<Double> list = get(key);
-        if(list == null){
-            list = new ArrayList<Double>();
-            einzelnePunkte.put(key, list);
-        }
-        list.add(value);
-    }
-
-    int hilfsvariable;
-    public void ranglisteErstellen(final int anzahlRegatten){
-
-        final Map<String, String> useridListe = new HashMap<>();
-
-        final List<String> rang = new ArrayList<>();
-        final List<String> name = new ArrayList<>();
-        final List<String> punkte = new ArrayList<>();
-        name.add("Teilnehmer");
-        punkte.add("Punkte");
-        rang.add("Rang");
-
+        //useridListe Befüllen (id und vorname)
         mDatabase.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -212,63 +203,57 @@ public class Historie extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
+    }
+
+    public void ranglisteErstellen(final int RegattaNummer, final int LaufNummer){
+
+        Punkte.clear();
+
+        final List<String> rang = new ArrayList<>();
+        final List<String> name = new ArrayList<>();
+        final List<String> punkte = new ArrayList<>();
+        name.add("Teilnehmer");
+        punkte.add("Punkte");
+        rang.add("Rang");
+
+
 
         mDatabase.child("regatten").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                //regatten anzahl
-                for(int i= 1; i<=anzahlRegatten;i++) {
-                    lauf = 0;
-                    hilfsvariable = i;
-                    //für jede regatta
-                    Iterator<DataSnapshot> dataSnapshots = dataSnapshot.child(Integer.toString(hilfsvariable)).getChildren().iterator();
-                    while (dataSnapshots.hasNext()) {
-                        DataSnapshot dataSnapshotChild = dataSnapshots.next();
-                        lauf++;
-                        gesammtAnzahlLäufe++;
 
-                        //für jeden lauf
-                        Iterator<DataSnapshot> dataSnapshots2 = dataSnapshotChild.child("").getChildren().iterator();
-                        while (dataSnapshots2.hasNext()) {
-                            DataSnapshot dataSnapshotChild2 = dataSnapshots2.next();
-                            put(dataSnapshotChild2.getKey(), Double.parseDouble(dataSnapshotChild2.getValue().toString()));
-                            if (!allePunkte.containsKey(dataSnapshotChild2.getKey())) {
-                                allePunkte.put(dataSnapshotChild2.getKey(), Double.parseDouble(dataSnapshotChild2.getValue().toString()));
-                            }else{
-                                allePunkte.put(dataSnapshotChild2.getKey(),allePunkte.get(dataSnapshotChild2.getKey())+Double.parseDouble(dataSnapshotChild2.getValue().toString()));
-                            }
-                        }
-                    }
+
+
+
+
+
+                //gehe alle teilnehmer vom lauf durch
+                Iterator<DataSnapshot> dataSnapshots = dataSnapshot.child(Integer.toString(RegattaNummer)).child(Integer.toString(LaufNummer)).getChildren().iterator();
+                while (dataSnapshots.hasNext()) {
+                    DataSnapshot dataSnapshotChild = dataSnapshots.next();
+                    Punkte.put(dataSnapshotChild.getKey(), Double.parseDouble(dataSnapshotChild.getValue().toString()));
                 }
 
-                System.out.println("test "+allePunkte.toString());
-                for (String key : allePunkte.keySet()) {
-                    List<Double> list = get(key);
-                    if(list == null){
-                        list = new ArrayList<Double>();
-                    }
-                    Collections.sort(list);
-                    if(allePunkte.get(key) != regatten*gesammtAnzahlLäufe*99) {
-                        if (gesammtAnzahlLäufe == 5) {
-                            allePunkte.put(key, allePunkte.get(key) - list.get(list.size() - 1));
-                        } else if (gesammtAnzahlLäufe == 7) {
-                            allePunkte.put(key, allePunkte.get(key) - list.get(list.size() - 1) - list.get(list.size() - 2));
-                        }else if (gesammtAnzahlLäufe == 10) {
-                            allePunkte.put(key, allePunkte.get(key) - list.get(list.size() - 1) - list.get(list.size() - 2) - list.get(list.size() - 3));
-                        }
-                    }
-                }
-                System.out.println("test "+allePunkte.toString());
+                Map<String, Double> sortedMap = sortByValue(Punkte);
 
-                Map<String, Double> sortedMap = sortByValue(allePunkte);
-
+                boolean firsttime = true;
                 int i = 1;
                 for (String key : sortedMap.keySet()) {
-                    if(sortedMap.get(key) != regatten*gesammtAnzahlLäufe*99) {
-                        if(vorherigePunktzahl != sortedMap.get(key) && (vorherigePunktzahl != 0)) {
-                            i++;
-                        }
+                    if (firsttime == false) {
+                            if (vorherigePunktzahl != sortedMap.get(key) && (vorherigePunktzahl != -1)) {
+                                i++;
+                            }
+                            vorherigePunktzahl = sortedMap.get(key);
+                            rang.add(Integer.toString(i));
+                            name.add(useridListe.get(key));
+                            double temp = sortedMap.get(key) * 100;
+                            temp = Math.round(temp);
+                            temp = temp / 100;
+                            punkte.add(Double.toString(temp));
+
+                    } else {
                         vorherigePunktzahl = sortedMap.get(key);
+                        firsttime = false;
                         rang.add(Integer.toString(i));
                         name.add(useridListe.get(key));
                         double temp = sortedMap.get(key) * 100;

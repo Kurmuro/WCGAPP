@@ -358,7 +358,6 @@ public class Startseite extends AppCompatActivity {
                                 i++;
                             }
                             vorherigePunktzahl = sortedMap.get(key);
-                            System.out.println("test" + vorherigePunktzahl);
                             rang.add(Integer.toString(i));
                             name.add(useridListe.get(key));
                             double temp = sortedMap.get(key) * 100;
