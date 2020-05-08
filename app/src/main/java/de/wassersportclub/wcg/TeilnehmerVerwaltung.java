@@ -70,7 +70,8 @@ public class TeilnehmerVerwaltung extends AppCompatActivity {
         logoutBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                logout();
+                //logout();
+                willkommenstextTV.setText("leckmich am arsch " + mAuth.getCurrentUser().getEmail());
             }
         });
         addBTN.setOnClickListener(new View.OnClickListener() {

@@ -74,7 +74,7 @@ public class TeilnehmerÄnderungsTabelle extends AppCompatActivity {
         logoutBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                logout();
+                //logout();
             }
         });
         passwortÄndernBTN.setOnClickListener(new View.OnClickListener() {

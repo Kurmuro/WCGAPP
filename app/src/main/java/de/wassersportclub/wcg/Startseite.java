@@ -168,10 +168,10 @@ public class Startseite extends AppCompatActivity {
 
     //Hört ob knöpfe gedrückt wurden
     public void doListen(){
-        logoutBTN.setOnClickListener(new View.OnClickListener() {
+        /*logoutBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                logout();
+                //logout();
             }
         });
         stegbelegungBTN.setOnClickListener(new View.OnClickListener() {
@@ -197,6 +197,10 @@ public class Startseite extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+
+         */
+ //bla
         if(regattaBTN != null) {
             regattaBTN.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -207,6 +211,8 @@ public class Startseite extends AppCompatActivity {
                 }
             });
         }
+
+        /*
         historieBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -221,6 +227,8 @@ public class Startseite extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+         */
     }
 
     //Loggt den benutzer aus
