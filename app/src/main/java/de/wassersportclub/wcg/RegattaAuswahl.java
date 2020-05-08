@@ -65,7 +65,7 @@ public class RegattaAuswahl extends AppCompatActivity {
         logoutBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //logout();
+                logout();
             }
         });
         neueRegattaBTN.setOnClickListener(new View.OnClickListener() {

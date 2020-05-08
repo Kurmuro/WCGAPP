@@ -67,7 +67,7 @@ public class Passwortaendern extends AppCompatActivity {
         logoutBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //logout();
+                logout();
             }
         });
         bestätigen.setOnClickListener(new View.OnClickListener() {
