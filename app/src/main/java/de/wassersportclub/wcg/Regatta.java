@@ -60,6 +60,7 @@ public class Regatta extends AppCompatActivity {
     Map<String, Double> alleUser = new HashMap<>();
     Map<String, Integer> yardStick = new HashMap<>();
     static HashMap<String, String> zeitTabelle = new HashMap<>();
+    static HashMap<String, String> berechnetteYardstickZeit = new HashMap<>();
     static HashMap<String, Boolean> userclickable = new HashMap<>();
 
 
@@ -324,7 +325,34 @@ public class Regatta extends AppCompatActivity {
                             zeitInSekunden += Integer.parseInt(split[0])*60*60;
                             berechneteYardstickzeit = (zeitInSekunden*100)/yardStick.get(e.getKey());
                             berechnungsZähler++;
-                            unsortMap.put(e.getKey().toString(),berechneteYardstickzeit);//hilfe
+                            unsortMap.put(e.getKey().toString(),berechneteYardstickzeit);
+
+                            final String[] secondString = new String[3];
+
+
+                    final int a = berechneteYardstickzeit;
+                    final int stunden = a / 3600;
+                    final int minuten = (a % 3600) / 60;
+                    final int sekunden = (a % 3600) % 60;
+
+
+                    secondString[0] = Integer.toString(sekunden);
+                    if (sekunden <= 9) {
+                        secondString[0] = "0" + sekunden;
+
+                    }
+                    secondString[1] = Integer.toString(minuten);
+                    if (minuten <= 9) {
+                        secondString[1] = "0" + minuten;
+
+                    }
+                    secondString[2] = Integer.toString(stunden);
+                    if (stunden <= 9) {
+                        secondString[2] = "0" + stunden;
+
+                    }
+
+                    berechnetteYardstickZeit.put(e.getKey().toString(), secondString[2] + ":" + secondString[1] + ":" + secondString[0]);
 
 
                             //berechnung fertig
@@ -362,6 +390,10 @@ public class Regatta extends AppCompatActivity {
                                 if(auswahl.equals("Neue Regatta")){
                                     for (String key : alleUser.keySet()) {
                                         mDatabase.child("regatten").child(Integer.toString(regatten+1)).child("1").child(key).setValue(alleUser.get(key));
+                                        if(!zeitTabelle.get(key).equals("00:00:00")) {
+                                            mDatabase.child("regatten").child(Integer.toString(regatten + 1)).child("1").child("NormaleZeit").child(key).setValue(zeitTabelle.get(key));
+                                        }
+                                        mDatabase.child("regatten").child(Integer.toString(regatten+1)).child("1").child("VerrechneteZeit").child(key).setValue(berechnetteYardstickZeit.get(key));
                                     }
                                     regattaBeendet();
                                 }

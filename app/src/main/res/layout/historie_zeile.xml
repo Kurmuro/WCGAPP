@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/ranglisteRangTV"
+            android:layout_width="55dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:text="Rang"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintBaseline_toBaselineOf="@+id/ranglisteNameTV"
+            app:layout_constraintEnd_toStartOf="@+id/ranglisteNameTV"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/ranglisteNameTV"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Name"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/ranglisteRangTV"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/ranglisteGestoppteZeitSchrift"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Gestoppte Zeit:"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toStartOf="@+id/ranglisteGestoppteZeitTV"
+            app:layout_constraintStart_toEndOf="@+id/ranglisteRangTV"
+            app:layout_constraintTop_toBottomOf="@+id/ranglistePunkteSchrift" />
+
+        <TextView
+            android:id="@+id/ranglistePunkteSchrift"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Punkte:"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toStartOf="@+id/ranglistePunkteTV"
+            app:layout_constraintStart_toEndOf="@+id/ranglisteRangTV"
+            app:layout_constraintTop_toBottomOf="@+id/ranglisteNameTV" />
+
+        <TextView
+            android:id="@+id/ranglisteBerechneteZeitSchrift"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Berechnete Zeit:"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toStartOf="@+id/ranglisteBerechneteZeitTV"
+            app:layout_constraintStart_toEndOf="@+id/ranglisteRangTV"
+            app:layout_constraintTop_toBottomOf="@+id/ranglisteGestoppteZeitSchrift" />
+
+        <TextView
+            android:id="@+id/ranglistePunkteTV"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:text="Punkte"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ranglisteNameTV" />
+
+        <TextView
+            android:id="@+id/ranglisteGestoppteZeitTV"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:text="00:00:00"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ranglistePunkteTV" />
+
+        <TextView
+            android:id="@+id/ranglisteBerechneteZeitTV"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:text="00:00:00"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ranglisteGestoppteZeitTV" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

@@ -100,6 +100,11 @@ public class Startseite extends AppCompatActivity {
                         if (dataSnapshotChild.child("Admin").exists()) {
                             if (dataSnapshotChild.child("Admin").getValue().toString().equals("true")) {
                                 setContentView(R.layout.adminstartseite);
+                                verwaltungBTN = findViewById(R.id.STARTSEITEverwaltungBTN);
+                                regattaBTN = findViewById(R.id.STARTSEITEregattaBTN);
+                            }else{
+                                regattaBTN = null;
+                                verwaltungBTN = null;
                             }
                         }
                     }
@@ -110,9 +115,7 @@ public class Startseite extends AppCompatActivity {
 
                 logoutBTN = findViewById(R.id.HEADERlogoutBTN);
                 stegbelegungBTN = findViewById(R.id.STARTSEITEstegbelegungBTN);
-                verwaltungBTN = null;
                 blauesbandBTN = findViewById(R.id.STARTSEITEblauesbandBTN);
-                regattaBTN = null;
                 historieBTN = findViewById(R.id.HistorieBtn);
                 passwortÄndernBTN = findViewById(R.id.passwortÄndernBTN);
                 list = findViewById(R.id.rangliste);
@@ -325,12 +328,16 @@ public class Startseite extends AppCompatActivity {
                         Iterator<DataSnapshot> dataSnapshots2 = dataSnapshotChild.child("").getChildren().iterator();
                         while (dataSnapshots2.hasNext()) {
                             DataSnapshot dataSnapshotChild2 = dataSnapshots2.next();
-                            put(dataSnapshotChild2.getKey(), Double.parseDouble(dataSnapshotChild2.getValue().toString()));
-                                if (!allePunkte.containsKey(dataSnapshotChild2.getKey())) {
-                                    allePunkte.put(dataSnapshotChild2.getKey(), Double.parseDouble(dataSnapshotChild2.getValue().toString()));
-                                }else{
-                                    allePunkte.put(dataSnapshotChild2.getKey(),allePunkte.get(dataSnapshotChild2.getKey())+Double.parseDouble(dataSnapshotChild2.getValue().toString()));
+                            if(!dataSnapshotChild2.getKey().equals("NormaleZeit")) {
+                                if (!dataSnapshotChild2.getKey().equals("VerrechneteZeit")) {
+                                    put(dataSnapshotChild2.getKey(), Double.parseDouble(dataSnapshotChild2.getValue().toString()));
+                                    if (!allePunkte.containsKey(dataSnapshotChild2.getKey())) {
+                                        allePunkte.put(dataSnapshotChild2.getKey(), Double.parseDouble(dataSnapshotChild2.getValue().toString()));
+                                    } else {
+                                        allePunkte.put(dataSnapshotChild2.getKey(), allePunkte.get(dataSnapshotChild2.getKey()) + Double.parseDouble(dataSnapshotChild2.getValue().toString()));
+                                    }
                                 }
+                            }
                         }
                     }
                 }

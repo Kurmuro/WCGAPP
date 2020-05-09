@@ -1,15 +1,20 @@
 package de.wassersportclub.wcg;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -45,6 +50,8 @@ public class Historie extends AppCompatActivity {
 
     Map<String, String> useridListe = new HashMap<>();
     HashMap<String, Double> Punkte = new HashMap<>();
+    Map<String, String> normaleZeit = new HashMap<>();
+    Map<String, String> berechneteZeit = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -212,9 +219,10 @@ public class Historie extends AppCompatActivity {
         final List<String> rang = new ArrayList<>();
         final List<String> name = new ArrayList<>();
         final List<String> punkte = new ArrayList<>();
-        name.add("Teilnehmer");
-        punkte.add("Punkte");
-        rang.add("Rang");
+        final List<String> sortiertenormaleZeit = new ArrayList<>();
+        final List<String> sortierteberechneteZeit = new ArrayList<>();
+
+
 
 
 
@@ -231,7 +239,29 @@ public class Historie extends AppCompatActivity {
                 Iterator<DataSnapshot> dataSnapshots = dataSnapshot.child(Integer.toString(RegattaNummer)).child(Integer.toString(LaufNummer)).getChildren().iterator();
                 while (dataSnapshots.hasNext()) {
                     DataSnapshot dataSnapshotChild = dataSnapshots.next();
-                    Punkte.put(dataSnapshotChild.getKey(), Double.parseDouble(dataSnapshotChild.getValue().toString()));
+                    if(!dataSnapshotChild.getKey().equals("NormaleZeit")) {
+                        if (!dataSnapshotChild.getKey().equals("VerrechneteZeit")) {
+                            Punkte.put(dataSnapshotChild.getKey(), Double.parseDouble(dataSnapshotChild.getValue().toString()));
+                        }
+                    }
+
+                    if(dataSnapshotChild.getKey().equals("NormaleZeit")) {
+                        //gehe alle teilnehmer von NormaleZeit durch
+                        Iterator<DataSnapshot> dataSnapshots2 = dataSnapshot.child(Integer.toString(RegattaNummer)).child(Integer.toString(LaufNummer)).child("NormaleZeit").getChildren().iterator();
+                        while (dataSnapshots2.hasNext()) {
+                            DataSnapshot dataSnapshotChild2 = dataSnapshots2.next();
+                            normaleZeit.put(dataSnapshotChild2.getKey(), dataSnapshotChild2.getValue().toString());
+                        }
+                    }
+
+                    if (!dataSnapshotChild.getKey().equals("VerrechneteZeit")) {
+                        //gehe alle teilnehmer von BerechnetteZeit durch
+                        Iterator<DataSnapshot> dataSnapshots3 = dataSnapshot.child(Integer.toString(RegattaNummer)).child(Integer.toString(LaufNummer)).child("VerrechneteZeit").getChildren().iterator();
+                        while (dataSnapshots3.hasNext()) {
+                            DataSnapshot dataSnapshotChild3 = dataSnapshots3.next();
+                            berechneteZeit.put(dataSnapshotChild3.getKey(), dataSnapshotChild3.getValue().toString());
+                        }
+                    }
                 }
 
                 Map<String, Double> sortedMap = sortByValue(Punkte);
@@ -239,6 +269,13 @@ public class Historie extends AppCompatActivity {
                 boolean firsttime = true;
                 int i = 1;
                 for (String key : sortedMap.keySet()) {
+                    if(normaleZeit.containsKey(key)) {
+                        sortiertenormaleZeit.add(normaleZeit.get(key));
+                        sortierteberechneteZeit.add(berechneteZeit.get(key));
+                    }else{
+                        sortiertenormaleZeit.add(" ");
+                        sortierteberechneteZeit.add(" ");
+                    }
                     if (firsttime == false) {
                             if (vorherigePunktzahl != sortedMap.get(key) && (vorherigePunktzahl != -1)) {
                                 i++;
@@ -263,7 +300,7 @@ public class Historie extends AppCompatActivity {
                     }
                 }
                 ListView list = findViewById(R.id.rangliste);
-                list.setAdapter(new MyListAdapterRang(Historie.this, R.layout.rangliste_zeile, name, punkte, rang));
+                list.setAdapter(new MyListAdapterRangHistorie(Historie.this, R.layout.historie_zeile, name, punkte, rang, sortiertenormaleZeit, sortierteberechneteZeit));
             }
 
             @Override
@@ -303,5 +340,68 @@ public class Historie extends AppCompatActivity {
 
 
         return sortedMap;
+    }
+
+    class MyListAdapterRangHistorie extends ArrayAdapter<String> {
+
+        int layout;
+        List<String> name;
+        List<String> punktzahl;
+        List<String> rang;
+        List<String> normaleZeit;
+        List<String> berechneteZeit;
+
+
+        public MyListAdapterRangHistorie(@NonNull Context context, int resource, @NonNull List<String> teilnehmer, List<String> punkte, List<String> rangwert, List<String> sortiertenormaleZeit, List<String> sortierteberechneteZeit) {
+            super(context, resource, teilnehmer);
+            layout = resource;
+            name = teilnehmer;
+            punktzahl = punkte;
+            rang = rangwert;
+            normaleZeit = sortiertenormaleZeit;
+            berechneteZeit = sortierteberechneteZeit;
+        }
+
+        @NonNull
+        @Override
+        public View getView(final int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+            ViewHolder mainViewHolder;
+            //if(convertView == null){
+            LayoutInflater inflater = LayoutInflater.from(getContext());
+            convertView = inflater.inflate(layout, parent, false);
+            final ViewHolderRang viewHolder = new ViewHolderRang();
+
+            viewHolder.name = convertView.findViewById(R.id.ranglisteNameTV);
+            viewHolder.name.setText(name.get(position));
+
+            viewHolder.rang = convertView.findViewById(R.id.ranglisteRangTV);
+            viewHolder.rang.setText(rang.get(position));
+
+            viewHolder.punktzahl = convertView.findViewById(R.id.ranglistePunkteTV);
+            viewHolder.punktzahl.setText(punktzahl.get(position));
+
+            viewHolder.normaleZeit = convertView.findViewById(R.id.ranglisteGestoppteZeitTV);
+            viewHolder.normaleZeit.setText(normaleZeit.get(position));
+
+            viewHolder.berechneteZeit = convertView.findViewById(R.id.ranglisteBerechneteZeitTV);
+            viewHolder.berechneteZeit.setText(berechneteZeit.get(position));
+
+
+
+
+            convertView.setTag(viewHolder);
+            //}
+            //else{
+            //    mainViewHolder = (ViewHolder) convertView.getTag();
+            //   mainViewHolder.name.setText(getItem(position));
+            //}
+
+            return convertView;
+        }
+
+    }
+    class ViewHolderRang{
+        TextView rang, name, punktzahl, normaleZeit, berechneteZeit;
+
     }
 }
