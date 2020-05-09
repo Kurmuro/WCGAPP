@@ -412,6 +412,10 @@ public class Regatta extends AppCompatActivity {
                                             }
                                             for (String key : alleUser.keySet()) {
                                                 mDatabase.child("regatten").child(Integer.toString(regatten)).child(Integer.toString(lauf+1)).child(key).setValue(alleUser.get(key));
+                                                if(!zeitTabelle.get(key).equals("00:00:00")) {
+                                                    mDatabase.child("regatten").child(Integer.toString(regatten + 1)).child("1").child("NormaleZeit").child(key).setValue(zeitTabelle.get(key));
+                                                }
+                                                mDatabase.child("regatten").child(Integer.toString(regatten+1)).child("1").child("VerrechneteZeit").child(key).setValue(berechnetteYardstickZeit.get(key));
                                             }
                                             regattaBeendet();
                                         }
