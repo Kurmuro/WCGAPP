@@ -40,6 +40,8 @@ import java.util.TimerTask;
 
 public class Regatta extends AppCompatActivity {
 
+    MyListAdapter myListAdapter;
+
     Button btnStartTime, btnTeilnehmerAuswaehlen, btnRegattaFertig;
     Timer stoppuhr;
     TextView timeview, auswahlview;
@@ -636,7 +638,8 @@ public class Regatta extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 //Wenn auf Datenbank zugegriffen werden kann:
 
-                list.setAdapter(new MyListAdapter(Regatta.this, R.layout.regatta_items, users, usersid));
+                myListAdapter = new MyListAdapter(Regatta.this, R.layout.regatta_items, users, usersid);
+                list.setAdapter(myListAdapter);
             }
 
 
