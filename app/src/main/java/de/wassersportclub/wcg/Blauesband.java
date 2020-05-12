@@ -51,6 +51,7 @@ public class Blauesband extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(Blauesband.this, BlauesbandRegeln.class);
                 startActivity(intent);
+
             }
         });
     }
