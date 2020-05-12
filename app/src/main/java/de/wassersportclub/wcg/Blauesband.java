@@ -49,7 +49,7 @@ public class Blauesband extends AppCompatActivity {
         regelnBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Blauesband.this, BlauesbandRegeln.class);
+                Intent intent = new Intent(Blauesband.this, BlauesbandZeitnahme.class);
                 startActivity(intent);
 
             }

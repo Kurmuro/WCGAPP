@@ -9,6 +9,6 @@ public class BlauesbandRegeln extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_blauesband_zeitnahme);
+        setContentView(R.layout.blauesband_regeln);
     }
 }
