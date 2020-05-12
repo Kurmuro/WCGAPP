@@ -1,8 +1,8 @@
 package de.wassersportclub.wcg;
 
-import androidx.fragment.app.FragmentActivity;
-
 import android.os.Bundle;
+
+import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -23,6 +23,7 @@ public class BlauesbandZeitnahme extends FragmentActivity implements OnMapReadyC
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
     }
 
 
@@ -32,10 +33,10 @@ public class BlauesbandZeitnahme extends FragmentActivity implements OnMapReadyC
         mMap = googleMap;
 
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(48.5282597, 7.8024007);
+        LatLng sydney = new LatLng(48.5246745, 7.8072005);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-        mMap.getMaxZoomLevel();
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 15));
+
     }
 }
 
