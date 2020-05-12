@@ -32,9 +32,10 @@ public class BlauesbandZeitnahme extends FragmentActivity implements OnMapReadyC
         mMap = googleMap;
 
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(48.5338299, 7.8057943);
+        LatLng sydney = new LatLng(48.5282597, 7.8024007);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        mMap.getMaxZoomLevel();
     }
 }
 
