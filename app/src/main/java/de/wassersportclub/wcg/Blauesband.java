@@ -14,8 +14,7 @@ public class Blauesband extends AppCompatActivity {
 
     TextView willkommenstextTV;
 
-    Button logoutBTN, regelnBTN, passwortÄndernBTN;
-
+    Button logoutBTN, regelnBTN, passwortÄndernBTN, ZeitnahmeBtn;
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     @Override
@@ -49,9 +48,16 @@ public class Blauesband extends AppCompatActivity {
         regelnBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Blauesband.this, BlauesbandZeitnahme.class);
+                Intent intent = new Intent(Blauesband.this, BlauesbandRegeln.class);
                 startActivity(intent);
 
+            }
+        });
+        ZeitnahmeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Blauesband.this, BlauesbandZeitnahme.class);
+                startActivity(intent);
             }
         });
     }
