@@ -31,8 +31,11 @@
             android:value="AIzaSyBBTpbtnJg77cbJEAg1KMLn3cRSIf0qr5M" />
 
         <activity
-            android:name=".BlauesbandZeitnahme"
+            android:name=".BlauesbandZeitnahmeGps"
             android:label="@string/title_activity_blauesband_zeitnahme"></activity>
+        <activity
+            android:name=".BlauesbandZeitnahmeManuell"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".TeilnehmerÄnderungsTabelle"
             android:screenOrientation="portrait" />

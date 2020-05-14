@@ -14,7 +14,7 @@ public class Blauesband extends AppCompatActivity {
 
     TextView willkommenstextTV;
 
-    Button logoutBTN, regelnBTN, passwortÄndernBTN, ZeitnahmeBtn;
+    Button logoutBTN, regelnBTN, passwortÄndernBTN, ZeitnahmeGpsBtn, ZeitnahmeManuellBtn;
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     @Override
@@ -27,6 +27,8 @@ public class Blauesband extends AppCompatActivity {
         regelnBTN = findViewById(R.id.BLAUESBANDregelnBTN);
         logoutBTN = findViewById(R.id.HEADERlogoutBTN);
         passwortÄndernBTN = findViewById(R.id.passwortÄndernBTN);
+        ZeitnahmeGpsBtn = findViewById(R.id.zeitnahmeGpsBtn);
+        ZeitnahmeManuellBtn = findViewById(R.id.zeitnahmeManuellBtn);
 
         doListen();
     }
@@ -38,6 +40,7 @@ public class Blauesband extends AppCompatActivity {
                 logout();
             }
         });
+
         passwortÄndernBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -45,6 +48,7 @@ public class Blauesband extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
         regelnBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -53,13 +57,23 @@ public class Blauesband extends AppCompatActivity {
 
             }
         });
-        ZeitnahmeBtn.setOnClickListener(new View.OnClickListener() {
+
+        ZeitnahmeGpsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Blauesband.this, BlauesbandZeitnahme.class);
+                Intent intent = new Intent(Blauesband.this, BlauesbandZeitnahmeGps.class);
                 startActivity(intent);
             }
         });
+
+        ZeitnahmeManuellBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Blauesband.this, BlauesbandZeitnahmeManuell.class);
+                startActivity(intent);
+            }
+        });
+
     }
 
     //Loggt den benutzer aus
