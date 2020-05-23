@@ -7,6 +7,24 @@
     tools:context=".MainActivity">
 
     <Button
+        android:id="@+id/ranglisteBtn"
+        android:layout_width="0dp"
+        android:layout_height="37dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:clickable="false"
+        android:gravity="center"
+        android:tag="1"
+        android:text="Rangliste"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/BLAUESBANDregelnBTN" />
+
+    <Button
         android:id="@+id/zeitnahmeManuellBtn"
         android:layout_width="0dp"
         android:layout_height="62dp"
@@ -57,5 +75,14 @@
         app:layout_constraintTop_toTopOf="parent">
 
     </include>
+
+    <ListView
+        android:id="@+id/ranglisteBlauesband"
+        android:layout_width="409dp"
+        android:layout_height="478dp"
+        android:layout_marginTop="1dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ranglisteBtn" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

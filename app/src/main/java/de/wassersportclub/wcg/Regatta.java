@@ -99,6 +99,7 @@ public class Regatta extends AppCompatActivity {
                     yardStick.put(dataSnapshotChild.getKey(), Integer.parseInt(dataSnapshotChild.child("Yardstick").getValue().toString()));
                 }
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
@@ -114,6 +115,7 @@ public class Regatta extends AppCompatActivity {
                     regatten++;
                 }
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
@@ -157,6 +159,7 @@ public class Regatta extends AppCompatActivity {
         TimerExit te = new TimerExit();
         te.execute();
     }
+
     public class TimerExit extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
@@ -167,6 +170,7 @@ public class Regatta extends AppCompatActivity {
             }
             return null;
         }
+
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
@@ -206,12 +210,12 @@ public class Regatta extends AppCompatActivity {
     public void rundenAnzahlBerechnung() {
         if (!userLastTime.isEmpty()) {
             int p = 0;
-            for (boolean e :checked){
-                if(e){
+            for (boolean e : checked) {
+                if (e) {
                     p++;
                 }
             }
-            if(p == userLastTime.size()) {
+            if (p == userLastTime.size()) {
                 ArrayList<Integer> userRundenAnzahl = new ArrayList<>();
                 for (String e : userLastTime.keySet()) {
                     int i = 0;
@@ -226,10 +230,10 @@ public class Regatta extends AppCompatActivity {
                 }
                 Collections.sort(userRundenAnzahl);
                 displayConfirmView(userRundenAnzahl.get(0));
-            }else{
+            } else {
                 Toast.makeText(Regatta.this, "Du musst alle Teilnehmer stoppen!", Toast.LENGTH_LONG).show();
             }
-        }else{
+        } else {
             Toast.makeText(Regatta.this, "Du musst erst einen Teilnehmer stoppen!", Toast.LENGTH_LONG).show();
         }
     }
@@ -242,13 +246,13 @@ public class Regatta extends AppCompatActivity {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo[] netInfo = cm.getAllNetworkInfo();
         for (NetworkInfo NI : netInfo) {
-            if (NI.getTypeName().equalsIgnoreCase("WIFI")){
-                if (NI.isConnected()){
+            if (NI.getTypeName().equalsIgnoreCase("WIFI")) {
+                if (NI.isConnected()) {
                     Wifi = true;
                 }
             }
             if (NI.getTypeName().equalsIgnoreCase("MOBILE"))
-                if (NI.isConnected()){
+                if (NI.isConnected()) {
                     Mobile = true;
                 }
         }
@@ -256,20 +260,17 @@ public class Regatta extends AppCompatActivity {
     }
 
 
-
-
-
-    public void displayConfirmView(final int runde){
+    public void displayConfirmView(final int runde) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setCancelable(true);
         builder.setTitle("Sicher?");
-        builder.setMessage("Die "+ runde +" Runde wird ausgewählt.\n\nDer Übertragungsvorgang kann ein paar Sekunden in Anspruch nehmen. Bitte habe etwas geduld!");
+        builder.setMessage("Die " + runde + " Runde wird ausgewählt.\n\nDer Übertragungsvorgang kann ein paar Sekunden in Anspruch nehmen. Bitte habe etwas geduld!");
 
         builder.setPositiveButton("Ja", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if(Connection()) {
+                if (Connection()) {
 
                     connectedRef.addValueEventListener(new ValueEventListener() {
                         @Override
@@ -286,7 +287,7 @@ public class Regatta extends AppCompatActivity {
                         public void onCancelled(@NonNull DatabaseError error) {
                         }
                     });
-                }else{
+                } else {
                     Toast.makeText(Regatta.this, "Prüfe deine Internet verbindung", Toast.LENGTH_LONG).show();
                 }
             }
@@ -300,138 +301,137 @@ public class Regatta extends AppCompatActivity {
 
     private void zeitBerechnung(int runde) {
 
-        for(String e : userLastTime.keySet()) {
-            zeitTabelle.put(e, userLastTime.get(e).get(runde-1));
+        for (String e : userLastTime.keySet()) {
+            zeitTabelle.put(e, userLastTime.get(e).get(runde - 1));
         }
 
-            final Map<String, Integer> unsortMap = new HashMap<>();
+        final Map<String, Integer> unsortMap = new HashMap<>();
 
-            for (boolean e :checked){
-                if(e){
-                    auswahlAnzahl++;
-                }
+        for (boolean e : checked) {
+            if (e) {
+                auswahlAnzahl++;
             }
+        }
 
 
-            for(final Map.Entry e : zeitTabelle.entrySet()){
-                if(!e.getValue().toString().equals("00:00:00")) {
+        for (final Map.Entry e : zeitTabelle.entrySet()) {
+            if (!e.getValue().toString().equals("00:00:00")) {
 
 
-                            int zeitInSekunden;
-                            int berechneteYardstickzeit;
+                int zeitInSekunden;
+                int berechneteYardstickzeit;
 
-                            String numbers = e.getValue().toString();
-                            String[] split = numbers.split(":");
-                            zeitInSekunden = Integer.parseInt(split[2]);
-                            zeitInSekunden += Integer.parseInt(split[1])*60;
-                            zeitInSekunden += Integer.parseInt(split[0])*60*60;
-                            berechneteYardstickzeit = (zeitInSekunden*100)/yardStick.get(e.getKey());
-                            berechnungsZähler++;
-                            unsortMap.put(e.getKey().toString(),berechneteYardstickzeit);
+                String numbers = e.getValue().toString();
+                String[] split = numbers.split(":");
+                zeitInSekunden = Integer.parseInt(split[2]);
+                zeitInSekunden += Integer.parseInt(split[1]) * 60;
+                zeitInSekunden += Integer.parseInt(split[0]) * 60 * 60;
+                berechneteYardstickzeit = (zeitInSekunden * 100) / yardStick.get(e.getKey());
+                berechnungsZähler++;
+                unsortMap.put(e.getKey().toString(), berechneteYardstickzeit);
 
-                            final String[] secondString = new String[3];
-
-
-                    final int a = berechneteYardstickzeit;
-                    final int stunden = a / 3600;
-                    final int minuten = (a % 3600) / 60;
-                    final int sekunden = (a % 3600) % 60;
+                final String[] secondString = new String[3];
 
 
-                    secondString[0] = Integer.toString(sekunden);
-                    if (sekunden <= 9) {
-                        secondString[0] = "0" + sekunden;
+                final int a = berechneteYardstickzeit;
+                final int stunden = a / 3600;
+                final int minuten = (a % 3600) / 60;
+                final int sekunden = (a % 3600) % 60;
 
+
+                secondString[0] = Integer.toString(sekunden);
+                if (sekunden <= 9) {
+                    secondString[0] = "0" + sekunden;
+
+                }
+                secondString[1] = Integer.toString(minuten);
+                if (minuten <= 9) {
+                    secondString[1] = "0" + minuten;
+
+                }
+                secondString[2] = Integer.toString(stunden);
+                if (stunden <= 9) {
+                    secondString[2] = "0" + stunden;
+
+                }
+
+                berechnetteYardstickZeit.put(e.getKey().toString(), secondString[2] + ":" + secondString[1] + ":" + secondString[0]);
+
+
+                //berechnung fertig
+                if (berechnungsZähler >= auswahlAnzahl) {
+                    Map<String, Integer> sortedMap = sortByValue(unsortMap);
+
+
+                    int i = 0;
+                    for (String key : sortedMap.keySet()) {
+                        i++;
+                        if (i == 1) {
+                            alleUser.put(key, 0.);
+                        }
+                        if (i == 2) {
+                            alleUser.put(key, 3.);
+                        }
+                        if (i == 3) {
+                            alleUser.put(key, 5.7);
+                        }
+                        if (i == 4) {
+                            alleUser.put(key, 8.);
+                        }
+                        if (i == 5) {
+                            alleUser.put(key, 10.);
+                        }
+                        if (i == 6) {
+                            alleUser.put(key, 11.7);
+                        }
+                        if (i >= 7) {
+                            alleUser.put(key, i + 6.);
+                        }
                     }
-                    secondString[1] = Integer.toString(minuten);
-                    if (minuten <= 9) {
-                        secondString[1] = "0" + minuten;
 
-                    }
-                    secondString[2] = Integer.toString(stunden);
-                    if (stunden <= 9) {
-                        secondString[2] = "0" + stunden;
-
-                    }
-
-                    berechnetteYardstickZeit.put(e.getKey().toString(), secondString[2] + ":" + secondString[1] + ":" + secondString[0]);
-
-
-                            //berechnung fertig
-                            if (berechnungsZähler >= auswahlAnzahl){
-                                Map<String, Integer> sortedMap = sortByValue(unsortMap);
-
-
-                                int i = 0;
-                                for (String key : sortedMap.keySet()) {
-                                    i++;
-                                    if (i == 1){
-                                        alleUser.put(key, 0.);
-                                    }
-                                    if(i == 2){
-                                        alleUser.put(key, 3.);
-                                    }
-                                    if(i == 3){
-                                        alleUser.put(key, 5.7);
-                                    }
-                                    if(i == 4){
-                                        alleUser.put(key, 8.);
-                                    }
-                                    if(i == 5){
-                                        alleUser.put(key, 10.);
-                                    }
-                                    if(i == 6){
-                                        alleUser.put(key, 11.7);
-                                    }
-                                    if(i >= 7){
-                                        alleUser.put(key, i+6.);
-                                    }
-                                }
-
-                                //bei neue Regatta
-                                if(auswahl.equals("Neue Regatta")){
-                                    for (String key : alleUser.keySet()) {
-                                        mDatabase.child("regatten").child(Integer.toString(regatten+1)).child("1").child(key).setValue(alleUser.get(key));
-                                        if(!zeitTabelle.get(key).equals("00:00:00")) {
-                                            mDatabase.child("regatten").child(Integer.toString(regatten + 1)).child("1").child("NormaleZeit").child(key).setValue(zeitTabelle.get(key));
-                                        }
-                                        mDatabase.child("regatten").child(Integer.toString(regatten+1)).child("1").child("VerrechneteZeit").child(key).setValue(berechnetteYardstickZeit.get(key));
-                                    }
-                                    regattaBeendet();
-                                }
-
-
-                                //Bei Neuer Lauf
-                                else if(auswahl.equals("Neuer Lauf")){
-                                    mDatabase.child("regatten").child(Integer.toString(regatten)).addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                            lauf = 0;
-                                            Iterator<DataSnapshot> dataSnapshots = dataSnapshot.getChildren().iterator();
-                                            while (dataSnapshots.hasNext()) {
-                                                DataSnapshot dataSnapshotChild = dataSnapshots.next();
-                                                lauf++;
-                                            }
-                                            for (String key : alleUser.keySet()) {
-                                                mDatabase.child("regatten").child(Integer.toString(regatten)).child(Integer.toString(lauf+1)).child(key).setValue(alleUser.get(key));
-                                                if(!zeitTabelle.get(key).equals("00:00:00")) {
-                                                    mDatabase.child("regatten").child(Integer.toString(regatten + 1)).child("1").child("NormaleZeit").child(key).setValue(zeitTabelle.get(key));
-                                                }
-                                                mDatabase.child("regatten").child(Integer.toString(regatten+1)).child("1").child("VerrechneteZeit").child(key).setValue(berechnetteYardstickZeit.get(key));
-                                            }
-                                            regattaBeendet();
-                                        }
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError databaseError) {
-                                        }
-                                    });
-                                }
+                    //bei neue Regatta
+                    if (auswahl.equals("Neue Regatta")) {
+                        for (String key : alleUser.keySet()) {
+                            mDatabase.child("regatten").child(Integer.toString(regatten + 1)).child("1").child(key).setValue(alleUser.get(key));
+                            if (!zeitTabelle.get(key).equals("00:00:00")) {
+                                mDatabase.child("regatten").child(Integer.toString(regatten + 1)).child("1").child("NormaleZeit").child(key).setValue(zeitTabelle.get(key));
                             }
+                            mDatabase.child("regatten").child(Integer.toString(regatten + 1)).child("1").child("VerrechneteZeit").child(key).setValue(berechnetteYardstickZeit.get(key));
+                        }
+                        regattaBeendet();
+                    }
+
+
+                    //Bei Neuer Lauf
+                    else if (auswahl.equals("Neuer Lauf")) {
+                        mDatabase.child("regatten").child(Integer.toString(regatten)).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                lauf = 0;
+                                Iterator<DataSnapshot> dataSnapshots = dataSnapshot.getChildren().iterator();
+                                while (dataSnapshots.hasNext()) {
+                                    DataSnapshot dataSnapshotChild = dataSnapshots.next();
+                                    lauf++;
+                                }
+                                for (String key : alleUser.keySet()) {
+                                    mDatabase.child("regatten").child(Integer.toString(regatten)).child(Integer.toString(lauf + 1)).child(key).setValue(alleUser.get(key));
+                                    if (!zeitTabelle.get(key).equals("00:00:00")) {
+                                        mDatabase.child("regatten").child(Integer.toString(regatten + 1)).child("1").child("NormaleZeit").child(key).setValue(zeitTabelle.get(key));
+                                    }
+                                    mDatabase.child("regatten").child(Integer.toString(regatten + 1)).child("1").child("VerrechneteZeit").child(key).setValue(berechnetteYardstickZeit.get(key));
+                                }
+                                regattaBeendet();
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                            }
+                        });
+                    }
                 }
             }
+        }
     }
-
-
 
 
     private static Map<String, Integer> sortByValue(Map<String, Integer> unsortMap) {
@@ -465,7 +465,6 @@ public class Regatta extends AppCompatActivity {
 
         return sortedMap;
     }
-
 
 
     //timer
@@ -514,11 +513,11 @@ public class Regatta extends AppCompatActivity {
                         });
                     }
                 }, 0, 1000);
-                 }
-            } else {
-                regattaAbbrechen();
             }
+        } else {
+            regattaAbbrechen();
         }
+    }
 
 
     //Liste erstellen mit allen Auswählbaren Benutzern
@@ -539,7 +538,7 @@ public class Regatta extends AppCompatActivity {
                     StringBuffer buffer = new StringBuffer();
                     numbers.add(dataSnapshotChild.getKey());
 
-                    if(!zeitTabelle.containsKey(dataSnapshotChild.getKey())){
+                    if (!zeitTabelle.containsKey(dataSnapshotChild.getKey())) {
                         zeitTabelle.put(dataSnapshotChild.getKey(), "00:00:00");
                     }
 
@@ -568,14 +567,14 @@ public class Regatta extends AppCompatActivity {
 
 
     //Liste der Teilnehmenden Benutzer anzeigen
-    public void displaySelectView(final String title, final String[] userlist, final boolean[] checked, final List<String> numbers){
+    public void displaySelectView(final String title, final String[] userlist, final boolean[] checked, final List<String> numbers) {
 
         final List<String> usersid = new ArrayList<>();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setCancelable(true);
         builder.setTitle(title);
-        builder.setMultiChoiceItems(userlist, checked , new DialogInterface.OnMultiChoiceClickListener() {
+        builder.setMultiChoiceItems(userlist, checked, new DialogInterface.OnMultiChoiceClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which, boolean isChecked) {
             }
@@ -584,8 +583,8 @@ public class Regatta extends AppCompatActivity {
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                for(int i = 0; i < checked.length; i++){
-                    if(checked[i]){
+                for (int i = 0; i < checked.length; i++) {
+                    if (checked[i]) {
                         usersid.add(numbers.get(i));
                     }
                 }
@@ -609,28 +608,28 @@ public class Regatta extends AppCompatActivity {
 
         //Teilnehmerliste erstellen <vorname+nachname>
         final List<String> users = new ArrayList<>();
-            //Für jeden ausgewählten Benutzer Vor und Nachname in users abspeichern
-            for (String i : usersid) {
-                UserRef.child("users").child(i).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        //Wenn auf Datenbank zugegriffen werden kann:
+        //Für jeden ausgewählten Benutzer Vor und Nachname in users abspeichern
+        for (String i : usersid) {
+            UserRef.child("users").child(i).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    //Wenn auf Datenbank zugegriffen werden kann:
 
-                        StringBuffer buffer = new StringBuffer();
+                    StringBuffer buffer = new StringBuffer();
 
-                        buffer.append(dataSnapshot.child("Vorname").getValue().toString() + " ");
-                        buffer.append(dataSnapshot.child("Nachname").getValue().toString());
+                    buffer.append(dataSnapshot.child("Vorname").getValue().toString() + " ");
+                    buffer.append(dataSnapshot.child("Nachname").getValue().toString());
 
-                        users.add(buffer.toString());
-                    }
+                    users.add(buffer.toString());
+                }
 
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        //Wenn ein Fehler auftritt:
-                    }
-                });
-            }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    //Wenn ein Fehler auftritt:
+                }
+            });
+        }
 
         //User Liste eintragen
         UserRef.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -650,6 +649,7 @@ public class Regatta extends AppCompatActivity {
         });
     }
 }
+
 class MyListAdapter extends ArrayAdapter<String> {
 
     int layout;
@@ -668,7 +668,7 @@ class MyListAdapter extends ArrayAdapter<String> {
     public View getView(final int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         ViewHolder mainViewHolder;
 
-        if(convertView == null){
+        if (convertView == null) {
             LayoutInflater inflater = LayoutInflater.from(getContext());
             convertView = inflater.inflate(layout, parent, false);
             final ViewHolder viewHolder = new ViewHolder();
@@ -692,14 +692,14 @@ class MyListAdapter extends ArrayAdapter<String> {
             static HashMap<String, List<String>> userLastTime = new HashMap<>();
 
              */
-            if(Regatta.userLastTime.containsKey(viewHolder.id)){
+            if (Regatta.userLastTime.containsKey(viewHolder.id)) {
                 viewHolder.runde = Regatta.runde.get(viewHolder.id);
                 viewHolder.zurückGedrückt = Regatta.zurückgedrückt.get(viewHolder.id);
                 viewHolder.editable = Regatta.isUserEditable.get(viewHolder.id);
                 viewHolder.lastTime = Regatta.userLastTime.get(viewHolder.id);
-                viewHolder.time.setText(viewHolder.lastTime.get(viewHolder.runde-1));
-                viewHolder.rundeTV.setText("Rnd: "+ viewHolder.runde);
-            }else {
+                viewHolder.time.setText(viewHolder.lastTime.get(viewHolder.runde - 1));
+                viewHolder.rundeTV.setText("Rnd: " + viewHolder.runde);
+            } else {
 
                 //Jeder Spieler der teilnimmt bekommt die Zeit von Runde eins auf null gesetzt
                 viewHolder.lastTime.add(0, "00:00:00");
@@ -722,49 +722,49 @@ class MyListAdapter extends ArrayAdapter<String> {
                 @Override
                 public void onClick(View v) {
                     //Wenn die Zeit gestartet wurde und der Benutzer nicht schon gestoppt wurde
-                    if(Regatta.timerisrunning && viewHolder.editable) {
+                    if (Regatta.timerisrunning && viewHolder.editable) {
                         Toast.makeText(getContext(), "Teilnehmer " + object.get(position) + " im Ziel", Toast.LENGTH_SHORT).show();
 
                         //die Sekunden werden umgerechnet im Stunden, Minuten und Sekunden
-                        final long longseconds = (System.currentTimeMillis() - Regatta.start)/1000;
-                        final int a = (int)longseconds;
+                        final long longseconds = (System.currentTimeMillis() - Regatta.start) / 1000;
+                        final int a = (int) longseconds;
                         final int stunden = a / 3600;
                         final int minuten = (a % 3600) / 60;
                         final Integer sekunden = (a % 3600) % 60;
 
                         secondString[0] = Integer.toString(sekunden);
-                        if(sekunden <=9) {
+                        if (sekunden <= 9) {
                             secondString[0] = "0" + sekunden;
                         }
 
                         secondString[1] = Integer.toString(minuten);
-                        if(minuten <=9) {
+                        if (minuten <= 9) {
                             secondString[1] = "0" + minuten;
                         }
 
                         secondString[2] = Integer.toString(stunden);
-                        if(stunden <=9) {
+                        if (stunden <= 9) {
                             secondString[2] = "0" + stunden;
                         }
 
                         //Umgerechnete Zeit
-                        String timestamp = secondString[2]+":"+secondString[1]+":"+ secondString[0];
+                        String timestamp = secondString[2] + ":" + secondString[1] + ":" + secondString[0];
 
                         //Gestoppte Zeit wird dem Benutzer angezeigt
                         viewHolder.time.setText(timestamp);
 
                         //Benutzer soll nicht versehendelich mehrfach Gestoppt werden können
                         viewHolder.editable = false;
-                        Regatta.userclickable.put(viewHolder.id,false);
+                        Regatta.userclickable.put(viewHolder.id, false);
 
                         //Speichere die Zeit
                         viewHolder.lastTime.set(viewHolder.runde - 1, timestamp);
                         //Regatta.userLastTime.put(viewHolder.id, viewHolder.lastTime);
                         viewHolder.übertrageDaten();
 
-                    }else if(!viewHolder.editable){
+                    } else if (!viewHolder.editable) {
                         Toast.makeText(getContext(), "Teilnehmer wurde schon gestoppt", Toast.LENGTH_SHORT).show();
-                    }else{
+                    } else {
                         Toast.makeText(getContext(), "Du musst zuerst die Zeit Starten", Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -777,7 +777,7 @@ class MyListAdapter extends ArrayAdapter<String> {
                     //wenn die Zeit gestartet wurde
                     if (Regatta.timerisrunning) {
                         //abfrage ob die momentane Runde schon gestoppt worden ist
-                        if (!viewHolder.lastTime.get(viewHolder.runde - 1).equals("00:00:00")){
+                        if (!viewHolder.lastTime.get(viewHolder.runde - 1).equals("00:00:00")) {
 
                             //wenn das die letzte runde war füge eine neue runde hinzu mit dem wert null
                             if (viewHolder.zurückGedrückt == 0) {
@@ -789,13 +789,13 @@ class MyListAdapter extends ArrayAdapter<String> {
                                 viewHolder.zurückGedrückt--;
                             }
 
-                        //ändere die angezeigte runde und zeige den wert der "neuen" runde an
-                        viewHolder.runde++;
-                        viewHolder.rundeTV.setText("Rnd: " + viewHolder.runde);
-                        viewHolder.time.setText(viewHolder.lastTime.get(viewHolder.runde -1));
-                        viewHolder.übertrageDaten();
+                            //ändere die angezeigte runde und zeige den wert der "neuen" runde an
+                            viewHolder.runde++;
+                            viewHolder.rundeTV.setText("Rnd: " + viewHolder.runde);
+                            viewHolder.time.setText(viewHolder.lastTime.get(viewHolder.runde - 1));
+                            viewHolder.übertrageDaten();
 
-                        }else{
+                        } else {
                             Toast.makeText(getContext(), "Du musst zuerst die Zeit Stoppen", Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -807,13 +807,13 @@ class MyListAdapter extends ArrayAdapter<String> {
                 @Override
                 public void onClick(View v) {
                     //Es dürfen keine negativen runden möglich sein
-                    if(viewHolder.runde > 1) {
+                    if (viewHolder.runde > 1) {
                         //zeige die vorherige runde an, spieler darf nicht editierbar sein
                         viewHolder.runde--;
-                        viewHolder.rundeTV.setText("Rnd: "+ viewHolder.runde);
+                        viewHolder.rundeTV.setText("Rnd: " + viewHolder.runde);
                         viewHolder.zurückGedrückt++;
                         viewHolder.editable = false;
-                        viewHolder.time.setText(viewHolder.lastTime.get(viewHolder.runde -1));
+                        viewHolder.time.setText(viewHolder.lastTime.get(viewHolder.runde - 1));
                         viewHolder.übertrageDaten();
 
                     }
@@ -836,7 +836,7 @@ class MyListAdapter extends ArrayAdapter<String> {
 
                     }
                     //wenn es die erste runde ist, werden die anderen runden auch gelöscht.
-                    if(viewHolder.runde == 1){
+                    if (viewHolder.runde == 1) {
 
                         viewHolder.lastTime.clear();
                         viewHolder.lastTime.add(0, "00:00:00");
@@ -848,8 +848,7 @@ class MyListAdapter extends ArrayAdapter<String> {
                 }
             });
             convertView.setTag(viewHolder);
-        }
-        else{
+        } else {
             mainViewHolder = (ViewHolder) convertView.getTag();
             mainViewHolder.name.setText(getItem(position));
         }
@@ -858,7 +857,8 @@ class MyListAdapter extends ArrayAdapter<String> {
     }
 
 }
-class ViewHolder{
+
+class ViewHolder {
     TextView name, time, rundeTV;
     Button btnStop, btnClear, btnRundeEntfernen, btnRundeHinzufügen;
 
@@ -873,7 +873,7 @@ class ViewHolder{
     //Wie oft wurde zurückgedrückt (welche Runde wird momentan angezeigt)
     int zurückGedrückt = 0;
 
-    public void übertrageDaten(){
+    public void übertrageDaten() {
         Regatta.isUserEditable.put(id, editable);
         Regatta.runde.put(id, runde);
         Regatta.zurückgedrückt.put(id, zurückGedrückt);

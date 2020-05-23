@@ -22,6 +22,7 @@ public class Blauesband extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.blauesband);
         willkommenstextTV = findViewById(R.id.HEADERwillkommenstextTV);
+
         willkommenstextTV.setText("Willkommen " + mAuth.getCurrentUser().getEmail());
 
         regelnBTN = findViewById(R.id.BLAUESBANDregelnBTN);
