@@ -54,8 +54,9 @@ public class BlauesbandZeitnahmeManuell extends AppCompatActivity {
         zeitBestätigenBtn = findViewById(R.id.zeitBestätigenBtn);
 
 
-
         willkommenstextTV.setText("Willkommen " + mAuth.getCurrentUser().getEmail());
+
+
 
 
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -77,6 +78,7 @@ public class BlauesbandZeitnahmeManuell extends AppCompatActivity {
     }
 
     public void doListen() {
+
         logoutBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -95,7 +97,7 @@ public class BlauesbandZeitnahmeManuell extends AppCompatActivity {
         btnTeilnehmerBBauswählen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Zeitberechnung();
+                SelectUserData();
             }
         });
 
@@ -104,7 +106,12 @@ public class BlauesbandZeitnahmeManuell extends AppCompatActivity {
             public void onClick(View v) {
                 if(!editTextZeit.getText().toString().isEmpty()) {
                     if(!editTextZeit.getText().toString().equals("00:00:00")){
-                        Zeitberechnung();
+                        if (!(editTextZeit.getText().toString().length() <= 7)) {
+                            Zeitberechnung();
+                        }else{
+                            Toast.makeText(BlauesbandZeitnahmeManuell.this, "Es muss eine plausible Zeit eingetragen werden " , Toast.LENGTH_LONG).show();
+
+                        }
                     }
                 }
             }
@@ -163,6 +170,7 @@ public class BlauesbandZeitnahmeManuell extends AppCompatActivity {
                         Toast.makeText(BlauesbandZeitnahmeManuell.this, "Die mit dem Yardstick verrechnete Zeit wurde Hochgeladen " , Toast.LENGTH_LONG).show();
 
                         BlauesbandZeitenRef.setValue(secondString[2] + ":" + secondString[1] + ":" + secondString[0]);
+
 
                     }
 

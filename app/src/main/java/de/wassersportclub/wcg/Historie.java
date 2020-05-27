@@ -49,6 +49,7 @@ public class Historie extends AppCompatActivity {
     double vorherigePunktzahl = 0;
 
     Map<String, String> useridListe = new HashMap<>();
+    Map<String, String> crewmitglieder = new HashMap<>();
     HashMap<String, Double> Punkte = new HashMap<>();
     Map<String, String> normaleZeit = new HashMap<>();
     Map<String, String> berechneteZeit = new HashMap<>();
@@ -203,6 +204,23 @@ public class Historie extends AppCompatActivity {
                 while (dataSnapshots.hasNext()) {
                     DataSnapshot dataSnapshotChild = dataSnapshots.next();
                     useridListe.put(dataSnapshotChild.getKey(), dataSnapshotChild.child("Vorname").getValue().toString());
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+
+        mDatabase.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Iterator<DataSnapshot> dataSnapshots = dataSnapshot.child("").getChildren().iterator();
+                while (dataSnapshots.hasNext()) {
+                    DataSnapshot dataSnapshotChild = dataSnapshots.next();
+                    crewmitglieder.put(dataSnapshotChild.getKey(), dataSnapshotChild.child("Nachname").getValue().toString());
+
                 }
             }
 
@@ -218,6 +236,7 @@ public class Historie extends AppCompatActivity {
 
         final List<String> rang = new ArrayList<>();
         final List<String> name = new ArrayList<>();
+        final List<String> crew = new ArrayList<>();
         final List<String> punkte = new ArrayList<>();
         final List<String> sortiertenormaleZeit = new ArrayList<>();
         final List<String> sortierteberechneteZeit = new ArrayList<>();
@@ -283,6 +302,7 @@ public class Historie extends AppCompatActivity {
                             vorherigePunktzahl = sortedMap.get(key);
                             rang.add(Integer.toString(i));
                             name.add(useridListe.get(key));
+                            crew.add(crewmitglieder.get(key));
                             double temp = sortedMap.get(key) * 100;
                             temp = Math.round(temp);
                             temp = temp / 100;
@@ -293,6 +313,7 @@ public class Historie extends AppCompatActivity {
                         firsttime = false;
                         rang.add(Integer.toString(i));
                         name.add(useridListe.get(key));
+                        crew.add(crewmitglieder.get(key));
                         double temp = sortedMap.get(key) * 100;
                         temp = Math.round(temp);
                         temp = temp / 100;
@@ -300,7 +321,7 @@ public class Historie extends AppCompatActivity {
                     }
                 }
                 ListView list = findViewById(R.id.rangliste);
-                list.setAdapter(new MyListAdapterRangHistorie(Historie.this, R.layout.historie_zeile, name, punkte, rang, sortiertenormaleZeit, sortierteberechneteZeit));
+                list.setAdapter(new MyListAdapterRangHistorie(Historie.this, R.layout.historie_zeile, name, punkte, rang, crew, sortiertenormaleZeit, sortierteberechneteZeit));
             }
 
             @Override
@@ -345,6 +366,7 @@ public class Historie extends AppCompatActivity {
     class MyListAdapterRangHistorie extends ArrayAdapter<String> {
 
         int layout;
+        List<String> crew;
         List<String> name;
         List<String> punktzahl;
         List<String> rang;
@@ -352,10 +374,11 @@ public class Historie extends AppCompatActivity {
         List<String> berechneteZeit;
 
 
-        public MyListAdapterRangHistorie(@NonNull Context context, int resource, @NonNull List<String> teilnehmer, List<String> punkte, List<String> rangwert, List<String> sortiertenormaleZeit, List<String> sortierteberechneteZeit) {
+        public MyListAdapterRangHistorie(@NonNull Context context, int resource, @NonNull List<String> teilnehmer, List<String> punkte,List<String>  crew, List<String> rangwert, List<String> sortiertenormaleZeit, List<String> sortierteberechneteZeit) {
             super(context, resource, teilnehmer);
             layout = resource;
             name = teilnehmer;
+            crewmitglieder = (Map<String, String>) crew;
             punktzahl = punkte;
             rang = rangwert;
             normaleZeit = sortiertenormaleZeit;
@@ -373,6 +396,9 @@ public class Historie extends AppCompatActivity {
 
             viewHolder.name = convertView.findViewById(R.id.ranglisteNameTV);
             viewHolder.name.setText(name.get(position));
+
+            viewHolder.crew = convertView.findViewById(R.id.ranglisteCrew);
+            viewHolder.crew.setText(crew.get(position));
 
             viewHolder.rang = convertView.findViewById(R.id.ranglisteRangTV);
             viewHolder.rang.setText(rang.get(position));
@@ -401,7 +427,7 @@ public class Historie extends AppCompatActivity {
 
     }
     class ViewHolderRang{
-        TextView rang, name, punktzahl, normaleZeit, berechneteZeit;
+        TextView rang, name,crew, punktzahl, normaleZeit, berechneteZeit;
 
     }
 }

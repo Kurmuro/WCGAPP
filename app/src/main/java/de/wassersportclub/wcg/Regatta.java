@@ -618,7 +618,6 @@ public class Regatta extends AppCompatActivity {
                     StringBuffer buffer = new StringBuffer();
 
                     buffer.append(dataSnapshot.child("Vorname").getValue().toString() + " ");
-                    buffer.append(dataSnapshot.child("Nachname").getValue().toString());
 
                     users.add(buffer.toString());
                 }

@@ -32,7 +32,9 @@
         android:gravity="center"
         android:inputType="time"
         android:text="00:00:00"
-        android:textSize="18sp"
+        android:textColor="#FF0000"
+        android:textSize="25sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/btnStartTime"
         app:layout_constraintTop_toTopOf="parent" />
@@ -73,7 +75,7 @@
     <ListView
         android:id="@+id/auswahlliste"
         android:layout_width="0dp"
-        android:layout_height="494dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="16dp"
