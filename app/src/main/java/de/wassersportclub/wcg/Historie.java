@@ -359,11 +359,11 @@ public class Historie extends AppCompatActivity {
         List<String> berechneteZeit;
 
 
-        public MyListAdapterRangHistorie(@NonNull Context context, int resource, @NonNull List<String> teilnehmer, List<String> punkte,List<String>  crew, List<String> rangwert, List<String> sortiertenormaleZeit, List<String> sortierteberechneteZeit) {
+        public MyListAdapterRangHistorie(@NonNull Context context, int resource, @NonNull List<String> teilnehmer, List<String> punkte,List<String>  crewm, List<String> rangwert, List<String> sortiertenormaleZeit, List<String> sortierteberechneteZeit) {
             super(context, resource, teilnehmer);
             layout = resource;
             name = teilnehmer;
-            crewmitglieder = (Map<String, String>) crew;
+            crew = crewm;
             punktzahl = punkte;
             rang = rangwert;
             normaleZeit = sortiertenormaleZeit;
