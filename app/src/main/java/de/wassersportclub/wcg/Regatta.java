@@ -828,13 +828,12 @@ class MyListAdapter extends ArrayAdapter<String> {
                 @Override
                 public void onClick(View v) {
                     if (mBackPressend+ TIME_INTERVALL > System.currentTimeMillis()) {
-                        return;
 
 
                         //darf nur in der ersten oder letzten runde gelöscht werden. (alles löschen oder nur die letzte runde)
                         if (viewHolder.zurückGedrückt == 0 || viewHolder.runde == 1) {
 
-                            viewHolder.time.setText(0, "00:00:00");
+                            viewHolder.time.setText("00:00:00");
                             viewHolder.editable = true;
                             //Regatta.userclickable.put(viewHolder.id, null);
                             viewHolder.lastTime.set(viewHolder.runde - 1, "00:00:00");
@@ -852,6 +851,7 @@ class MyListAdapter extends ArrayAdapter<String> {
                             viewHolder.übertrageDaten();
 
                         }
+                        return;
                     }else {Toast.makeText(getContext(),"Zwei mal drücken um die Rundenzeit zurückzusettzen", Toast.LENGTH_LONG).show();}
 
                     mBackPressend = System.currentTimeMillis();
