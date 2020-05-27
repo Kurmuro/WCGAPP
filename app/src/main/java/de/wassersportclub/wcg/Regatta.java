@@ -834,7 +834,7 @@ class MyListAdapter extends ArrayAdapter<String> {
                         //darf nur in der ersten oder letzten runde gelöscht werden. (alles löschen oder nur die letzte runde)
                         if (viewHolder.zurückGedrückt == 0 || viewHolder.runde == 1) {
 
-                            viewHolder.time.setText("00:00:00");
+                            viewHolder.time.setText(0, "00:00:00");
                             viewHolder.editable = true;
                             //Regatta.userclickable.put(viewHolder.id, null);
                             viewHolder.lastTime.set(viewHolder.runde - 1, "00:00:00");
