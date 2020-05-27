@@ -204,23 +204,7 @@ public class Historie extends AppCompatActivity {
                 while (dataSnapshots.hasNext()) {
                     DataSnapshot dataSnapshotChild = dataSnapshots.next();
                     useridListe.put(dataSnapshotChild.getKey(), dataSnapshotChild.child("Vorname").getValue().toString());
-
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
-
-        mDatabase.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Iterator<DataSnapshot> dataSnapshots = dataSnapshot.child("").getChildren().iterator();
-                while (dataSnapshots.hasNext()) {
-                    DataSnapshot dataSnapshotChild = dataSnapshots.next();
                     crewmitglieder.put(dataSnapshotChild.getKey(), dataSnapshotChild.child("Nachname").getValue().toString());
-
                 }
             }
 
@@ -228,6 +212,7 @@ public class Historie extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
+
     }
 
     public void ranglisteErstellen(final int RegattaNummer, final int LaufNummer){
@@ -321,7 +306,7 @@ public class Historie extends AppCompatActivity {
                     }
                 }
                 ListView list = findViewById(R.id.rangliste);
-                list.setAdapter(new MyListAdapterRangHistorie(Historie.this, R.layout.historie_zeile, name, punkte, rang, crew, sortiertenormaleZeit, sortierteberechneteZeit));
+                list.setAdapter(new MyListAdapterRangHistorie(Historie.this, R.layout.historie_zeile, name, punkte, crew, rang, sortiertenormaleZeit, sortierteberechneteZeit));
             }
 
             @Override
