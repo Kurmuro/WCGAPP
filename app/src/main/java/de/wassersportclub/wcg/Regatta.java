@@ -662,6 +662,9 @@ class MyListAdapter extends ArrayAdapter<String> {
         useduserid = usedusersid;
     }
 
+    private static final int TIME_INTERVALL = 2000;
+    private long mBackPressend;
+
     @NonNull
     @Override
     public View getView(final int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -819,31 +822,39 @@ class MyListAdapter extends ArrayAdapter<String> {
                 }
             });
 
+
             //Lösche die Genommene Zeit
             viewHolder.btnClear.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //darf nur in der ersten oder letzten runde gelöscht werden. (alles löschen oder nur die letzte runde)
-                    if (viewHolder.zurückGedrückt == 0 || viewHolder.runde == 1) {
+                    if (mBackPressend+ TIME_INTERVALL > System.currentTimeMillis()) {
+                        return;
 
-                        viewHolder.time.setText("00:00:00");
-                        viewHolder.editable = true;
-                        //Regatta.userclickable.put(viewHolder.id, null);
-                        viewHolder.lastTime.set(viewHolder.runde - 1, "00:00:00");
-                        Regatta.userLastTime.put(viewHolder.id, viewHolder.lastTime);
-                        viewHolder.übertrageDaten();
 
-                    }
-                    //wenn es die erste runde ist, werden die anderen runden auch gelöscht.
-                    if (viewHolder.runde == 1) {
+                        //darf nur in der ersten oder letzten runde gelöscht werden. (alles löschen oder nur die letzte runde)
+                        if (viewHolder.zurückGedrückt == 0 || viewHolder.runde == 1) {
 
-                        viewHolder.lastTime.clear();
-                        viewHolder.lastTime.add(0, "00:00:00");
-                        //Regatta.userLastTime.put(viewHolder.id, viewHolder.lastTime);
-                        viewHolder.zurückGedrückt = 0;
-                        viewHolder.übertrageDaten();
+                            viewHolder.time.setText("00:00:00");
+                            viewHolder.editable = true;
+                            //Regatta.userclickable.put(viewHolder.id, null);
+                            viewHolder.lastTime.set(viewHolder.runde - 1, "00:00:00");
+                            Regatta.userLastTime.put(viewHolder.id, viewHolder.lastTime);
+                            viewHolder.übertrageDaten();
 
-                    }
+                        }
+                        //wenn es die erste runde ist, werden die anderen runden auch gelöscht.
+                        if (viewHolder.runde == 1) {
+
+                            viewHolder.lastTime.clear();
+                            viewHolder.lastTime.add(0, "00:00:00");
+                            //Regatta.userLastTime.put(viewHolder.id, viewHolder.lastTime);
+                            viewHolder.zurückGedrückt = 0;
+                            viewHolder.übertrageDaten();
+
+                        }
+                    }else {Toast.makeText(getContext(),"Zwei mal drücken um die Rundenzeit zurückzusettzen", Toast.LENGTH_LONG).show();}
+
+                    mBackPressend = System.currentTimeMillis();
                 }
             });
             convertView.setTag(viewHolder);
@@ -878,4 +889,6 @@ class ViewHolder {
         Regatta.zurückgedrückt.put(id, zurückGedrückt);
         Regatta.userLastTime.put(id, lastTime);
     }
+
+
 }
