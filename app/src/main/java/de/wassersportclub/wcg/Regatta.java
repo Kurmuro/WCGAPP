@@ -852,7 +852,7 @@ class MyListAdapter extends ArrayAdapter<String> {
 
                         }
                         return;
-                    }else {Toast.makeText(getContext(),"Zwei mal drücken um die Rundenzeit zurückzusettzen", Toast.LENGTH_LONG).show();}
+                    }else {Toast.makeText(getContext(),"Zwei mal drücken um die Rundenzeit zurückzusetzen", Toast.LENGTH_LONG).show();}
 
                     mBackPressend = System.currentTimeMillis();
                 }
